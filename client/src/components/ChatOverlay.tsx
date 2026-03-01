@@ -1,0 +1,109 @@
+import { useState, useRef, useEffect } from 'react';
+import { ChatMessage } from '../types';
+
+interface ChatOverlayProps {
+  messages: ChatMessage[];
+  myLanguage: string;
+  userId: string;
+  onSendMessage: (text: string) => void;
+}
+
+export default function ChatOverlay({ messages, myLanguage, userId, onSendMessage }: ChatOverlayProps) {
+  const [input, setInput] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    onSendMessage(input);
+    setInput('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  /**
+   * Display rule for dual-language messages:
+   * - If my language matches the original, show original as primary
+   * - If my language matches the translated, show translated as primary
+   * - Fallback: original as primary
+   */
+  function formatMessage(msg: ChatMessage) {
+    let primary: string;
+    let secondary: string;
+    let label: string;
+
+    if (myLanguage === msg.originalLanguage) {
+      primary = msg.originalText;
+      secondary = msg.translatedText;
+      label = `${msg.originalLanguage} → ${msg.translatedLanguage}`;
+    } else if (myLanguage === msg.translatedLanguage) {
+      primary = msg.translatedText;
+      secondary = msg.originalText;
+      label = `${msg.translatedLanguage} ← ${msg.originalLanguage}`;
+    } else {
+      // Fallback
+      primary = msg.originalText;
+      secondary = msg.translatedText;
+      label = `${msg.originalLanguage} → ${msg.translatedLanguage}`;
+    }
+
+    return { primary, secondary, label };
+  }
+
+  // Show last N messages in collapsed mode
+  const displayMessages = isExpanded ? messages : messages.slice(-5);
+
+  return (
+    <div className={`chat-overlay ${isExpanded ? 'expanded' : ''}`}>
+      <div className="chat-header" onClick={() => setIsExpanded(!isExpanded)}>
+        <span>💬 Chat {messages.length > 0 && `(${messages.length})`}</span>
+        <span className="chat-toggle">{isExpanded ? '▼' : '▲'}</span>
+      </div>
+
+      <div className="chat-messages">
+        {displayMessages.map((msg) => {
+          const { primary, secondary, label } = formatMessage(msg);
+          const isOwn = msg.senderId === userId;
+
+          return (
+            <div key={msg.id} className={`chat-bubble ${isOwn ? 'own' : 'peer'}`}>
+              {!isOwn && <div className="chat-sender">{msg.senderName}</div>}
+              <div className="chat-primary">{primary}</div>
+              {msg.originalLanguage !== msg.translatedLanguage && (
+                <div className="chat-secondary">
+                  {secondary}
+                  <span className="chat-lang-tag">({label})</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="chat-input-row">
+        <input
+          type="text"
+          placeholder="Type a message…"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="chat-input"
+        />
+        <button className="btn btn-send" onClick={handleSend} disabled={!input.trim()}>
+          Send
+        </button>
+      </div>
+    </div>
+  );
+}

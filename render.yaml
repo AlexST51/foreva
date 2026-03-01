@@ -1,0 +1,23 @@
+# Render Blueprint — deploy the signalling server
+# https://render.com/docs/blueprint-spec
+#
+# To use: connect this repo to Render and it will auto-detect this file.
+
+services:
+  - type: web
+    name: foreva-server
+    runtime: node
+    region: frankfurt  # EU region, close to UK
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: CLIENT_URL
+        sync: false  # Set this to your Vercel client URL after deploying
+    healthCheckPath: /health
+    autoDeploy: true
