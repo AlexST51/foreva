@@ -67,7 +67,6 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
                   </div>
                   <div className="chat-primary">
                     {secondary}
-                    <span className="chat-lang-tag">({label})</span>
                   </div>
                 </>
               ) : (
