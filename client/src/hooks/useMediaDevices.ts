@@ -18,15 +18,59 @@ export function useMediaDevices() {
   const startMedia = useCallback(async () => {
     try {
       setError(null);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      streamRef.current = stream;
-      setLocalStream(stream);
-      return stream;
+
+      // Try video + audio first
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: true,
+        });
+        streamRef.current = stream;
+        setLocalStream(stream);
+        return stream;
+      } catch (videoErr) {
+        console.warn('[Media] Video+audio failed, trying audio only:', videoErr);
+
+        // Fall back to audio only
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true,
+          });
+          streamRef.current = audioStream;
+          setLocalStream(audioStream);
+          setError('Camera not available — audio only');
+          return audioStream;
+        } catch (audioErr) {
+          console.warn('[Media] Audio only also failed:', audioErr);
+          throw videoErr; // Throw the original error
+        }
+      }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to access camera/microphone';
+      let message = 'Failed to access camera/microphone';
+      if (err instanceof DOMException) {
+        switch (err.name) {
+          case 'NotFoundError':
+          case 'DevicesNotFoundError':
+            message = 'No camera or microphone found on this device';
+            break;
+          case 'NotAllowedError':
+          case 'PermissionDeniedError':
+            message = 'Camera/microphone permission denied. Please allow access in your browser settings.';
+            break;
+          case 'NotReadableError':
+          case 'TrackStartError':
+            message = 'Camera or microphone is in use by another app';
+            break;
+          case 'OverconstrainedError':
+            message = 'Camera does not meet the required constraints';
+            break;
+          default:
+            message = err.message || message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
       setError(message);
       console.error('[Media] Error accessing devices:', err);
       return null;
