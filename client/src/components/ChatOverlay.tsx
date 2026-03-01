@@ -33,29 +33,12 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
 
   /**
    * Display rule for dual-language messages:
-   * - If my language matches the original, show original as primary
-   * - If my language matches the translated, show translated as primary
-   * - Fallback: original as primary
+   * Always show original text on top, translation below.
    */
   function formatMessage(msg: ChatMessage) {
-    let primary: string;
-    let secondary: string;
-    let label: string;
-
-    if (myLanguage === msg.originalLanguage) {
-      primary = msg.originalText;
-      secondary = msg.translatedText;
-      label = `${msg.originalLanguage} → ${msg.translatedLanguage}`;
-    } else if (myLanguage === msg.translatedLanguage) {
-      primary = msg.translatedText;
-      secondary = msg.originalText;
-      label = `${msg.translatedLanguage} ← ${msg.originalLanguage}`;
-    } else {
-      // Fallback
-      primary = msg.originalText;
-      secondary = msg.translatedText;
-      label = `${msg.originalLanguage} → ${msg.translatedLanguage}`;
-    }
+    const primary = msg.originalText;
+    const secondary = msg.translatedText;
+    const label = `${msg.originalLanguage} → ${msg.translatedLanguage}`;
 
     return { primary, secondary, label };
   }
