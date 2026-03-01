@@ -22,10 +22,24 @@ const app = express();
 app.use(express.json());
 
 // CORS: allow the client origin
-// In production, restrict this to your actual domain.
+// In production, allow the specific client URL and all Vercel preview URLs.
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Allow the configured client URL
+      if (origin === CLIENT_URL) return callback(null, true);
+      
+      // Allow all Vercel preview/deployment URLs for this project
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      
+      // Allow localhost for development
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) return callback(null, true);
+      
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   })
