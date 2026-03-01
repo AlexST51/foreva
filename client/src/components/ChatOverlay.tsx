@@ -60,13 +60,18 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
 
           return (
             <div key={msg.id} className={`chat-bubble ${isOwn ? 'own' : 'peer'}`}>
-              {!isOwn && <div className="chat-sender">{msg.senderName}</div>}
-              <div className="chat-primary">{primary}</div>
-              {msg.originalLanguage !== msg.translatedLanguage && (
-                <div className="chat-secondary">
-                  {secondary}
-                  <span className="chat-lang-tag">({label})</span>
-                </div>
+              {msg.originalLanguage !== msg.translatedLanguage ? (
+                <>
+                  <div className="chat-secondary">
+                    {primary}
+                  </div>
+                  <div className="chat-primary">
+                    {secondary}
+                    <span className="chat-lang-tag">({label})</span>
+                  </div>
+                </>
+              ) : (
+                <div className="chat-primary">{primary}</div>
               )}
             </div>
           );
