@@ -311,7 +311,7 @@ html, body {
   top: 1rem;
   right: 1rem;
   width: 120px;
-  height: 213px; /* 9:16 portrait aspect ratio */
+  height: 160px; /* 3:4 portrait aspect ratio */
   border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -570,7 +570,7 @@ html, body {
 
   .local-video-container {
     width: 100px;
-    height: 178px; /* 9:16 portrait */
+    height: 133px; /* 3:4 portrait */
     top: 0.5rem;
     right: 0.5rem;
   }
@@ -628,7 +628,7 @@ html, body {
 
   .local-video-container {
     width: 80px;
-    height: 142px; /* 9:16 portrait */
+    height: 107px; /* 3:4 portrait */
   }
 
   .chat-overlay {
