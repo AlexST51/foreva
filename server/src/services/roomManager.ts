@@ -17,8 +17,29 @@ class RoomManager {
   /** How often to check for expired rooms (default: 5 minutes) */
   private readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
 
+  /** Fixed test token for development/testing */
+  static readonly TEST_TOKEN = 'test';
+
   constructor() {
     this.startCleanupTimer();
+    this.createTestRoom();
+  }
+
+  /**
+   * Create a fixed test room that never expires.
+   * Accessible via /c/test
+   */
+  private createTestRoom(): void {
+    const room: Room = {
+      roomId: 'test-room-fixed',
+      joinToken: RoomManager.TEST_TOKEN,
+      state: 'pending',
+      participants: [],
+      createdAt: Date.now(),
+    };
+    this.roomsByToken.set(room.joinToken, room);
+    this.roomsByRoomId.set(room.roomId, room);
+    console.log('[RoomManager] Fixed test room created (token: test)');
   }
 
   /**
@@ -99,7 +120,7 @@ class RoomManager {
 
   /**
    * Remove a participant from a room.
-   * If both participants have left, close the room.
+   * If both participants have left, close the room (or reset if it's the test room).
    */
   removeParticipant(roomId: string, userId: string): void {
     const room = this.roomsByRoomId.get(roomId);
@@ -107,17 +128,34 @@ class RoomManager {
 
     room.participants = room.participants.filter((p) => p.userId !== userId);
 
-    // If no participants remain, close the room
+    // If no participants remain
     if (room.participants.length === 0) {
-      this.closeRoom(room, 'All participants left');
+      // Test room resets instead of closing so it can be reused
+      if (room.joinToken === RoomManager.TEST_TOKEN) {
+        room.state = 'pending';
+        room.closedAt = undefined;
+        console.log('[RoomManager] Test room reset to pending');
+      } else {
+        this.closeRoom(room, 'All participants left');
+      }
     }
   }
 
   /**
    * Close a room immediately. No further joins allowed.
+   * The test room resets instead of closing.
    */
   closeRoom(room: Room, _reason: string): void {
     if (room.state === 'closed') return;
+
+    // Test room resets instead of permanently closing
+    if (room.joinToken === RoomManager.TEST_TOKEN) {
+      room.state = 'pending';
+      room.participants = [];
+      room.closedAt = undefined;
+      console.log('[RoomManager] Test room reset to pending (close attempted)');
+      return;
+    }
 
     room.state = 'closed';
     room.closedAt = Date.now();
@@ -159,6 +197,9 @@ class RoomManager {
     this.expiryTimer = setInterval(() => {
       const now = Date.now();
       for (const [token, room] of this.roomsByToken) {
+        // Never expire the fixed test room
+        if (token === RoomManager.TEST_TOKEN) continue;
+
         if (
           room.state === 'pending' &&
           now - room.createdAt > this.PENDING_EXPIRY_MS

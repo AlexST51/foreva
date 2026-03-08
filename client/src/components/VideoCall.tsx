@@ -6,6 +6,118 @@ import { ChatMessage, ServerWsMessage, ParticipantRole } from '../types';
 import ChatOverlay from './ChatOverlay';
 import VideoControls from './VideoControls';
 
+/* ─── Draggable PiP Component ────────────────────────────────────────────── */
+
+interface DraggablePipProps {
+  localVideoRef: React.RefObject<HTMLVideoElement | null>;
+}
+
+function DraggablePip({ localVideoRef }: DraggablePipProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const clampPosition = (x: number, y: number) => {
+      const parentW = window.innerWidth;
+      const parentH = window.innerHeight;
+      const elW = el.offsetWidth;
+      const elH = el.offsetHeight;
+      return {
+        x: Math.max(0, Math.min(x, parentW - elW)),
+        y: Math.max(0, Math.min(y, parentH - elH)),
+      };
+    };
+
+    // --- Mouse events ---
+    const onMouseDown = (e: MouseEvent) => {
+      isDragging.current = true;
+      el.classList.add('dragging');
+      const rect = el.getBoundingClientRect();
+      dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      e.preventDefault();
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      const pos = clampPosition(
+        e.clientX - dragOffset.current.x,
+        e.clientY - dragOffset.current.y
+      );
+      el.style.left = pos.x + 'px';
+      el.style.top = pos.y + 'px';
+      el.style.right = 'auto';
+    };
+
+    const onMouseUp = () => {
+      isDragging.current = false;
+      el.classList.remove('dragging');
+    };
+
+    // --- Touch events ---
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      isDragging.current = true;
+      el.classList.add('dragging');
+      const touch = e.touches[0];
+      const rect = el.getBoundingClientRect();
+      dragOffset.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const pos = clampPosition(
+        touch.clientX - dragOffset.current.x,
+        touch.clientY - dragOffset.current.y
+      );
+      el.style.left = pos.x + 'px';
+      el.style.top = pos.y + 'px';
+      el.style.right = 'auto';
+      e.preventDefault();
+    };
+
+    const onTouchEnd = () => {
+      isDragging.current = false;
+      el.classList.remove('dragging');
+    };
+
+    el.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+
+    return () => {
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      el.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} className="local-video-container">
+      <video
+        ref={localVideoRef}
+        autoPlay
+        playsInline
+        muted
+        className="local-video"
+      />
+    </div>
+  );
+}
+
+/* ─── VideoCall Component ────────────────────────────────────────────────── */
+
 interface VideoCallProps {
   roomId: string;
   joinToken: string;
@@ -304,24 +416,8 @@ export default function VideoCall({
         )}
       </div>
 
-      {/* Local video (small, corner) */}
-      <div className="local-video-container">
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          muted
-          className="local-video"
-        />
-        {localStream && (
-          <div className="media-indicator">
-            {!isMuted && <span className="indicator-dot active" title="Microphone active">🎤</span>}
-            {isMuted && <span className="indicator-dot muted" title="Microphone muted">🔇</span>}
-            {!isCameraOff && <span className="indicator-dot active" title="Camera active">📹</span>}
-            {isCameraOff && <span className="indicator-dot muted" title="Camera off">📷</span>}
-          </div>
-        )}
-      </div>
+      {/* Local video (small, corner, draggable) */}
+      <DraggablePip localVideoRef={localVideoRef} />
 
       {/* Connection status banner */}
       {status === 'connected' && peerName && (

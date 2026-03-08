@@ -12,16 +12,35 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Prevent mobile keyboard from resizing the layout
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleResize = () => {
+      // When keyboard opens on mobile, scroll input into view
+      if (document.activeElement === inputRef.current) {
+        inputRef.current?.scrollIntoView({ block: 'nearest' });
+      }
+    };
+
+    viewport.addEventListener('resize', handleResize);
+    return () => viewport.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleSend = () => {
     if (!input.trim()) return;
     onSendMessage(input);
     setInput('');
+    // Keep focus on input after sending so keyboard stays open on mobile
+    inputRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -80,6 +99,7 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
 
       <div className="chat-input-row">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Type a message…"
           value={input}
