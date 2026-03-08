@@ -14,6 +14,9 @@ class RoomManager {
   /** Pending room expiry time in ms (default: 60 minutes) */
   private readonly PENDING_EXPIRY_MS = 60 * 60 * 1000;
 
+  /** Closed room cleanup time in ms (default: 5 minutes after closing) */
+  private readonly CLOSED_CLEANUP_MS = 5 * 60 * 1000;
+
   /** How often to check for expired rooms (default: 5 minutes) */
   private readonly CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -147,7 +150,18 @@ class RoomManager {
     const room = this.roomsByRoomId.get(roomId);
     if (!room) return;
 
+    const before = room.participants.length;
     room.participants = room.participants.filter((p) => p.userId !== userId);
+
+    if (room.participants.length === before) return; // user wasn't in the room
+
+    console.log(`[RoomManager] Removed ${userId} from ${roomId}, ${room.participants.length} participant(s) remain`);
+
+    // If one participant remains, go back to pending
+    if (room.participants.length === 1 && room.state === 'active') {
+      room.state = 'pending';
+      console.log(`[RoomManager] Room ${roomId} back to pending (1 participant left)`);
+    }
 
     // If no participants remain
     if (room.participants.length === 0) {
@@ -217,16 +231,38 @@ class RoomManager {
   private startCleanupTimer(): void {
     this.expiryTimer = setInterval(() => {
       const now = Date.now();
+      const toDelete: string[] = [];
+
       for (const [token, room] of this.roomsByToken) {
         // Never expire the fixed test room
         if (token === RoomManager.TEST_TOKEN) continue;
 
+        // Expire pending rooms that have been waiting too long
         if (
           room.state === 'pending' &&
           now - room.createdAt > this.PENDING_EXPIRY_MS
         ) {
           this.closeRoom(room, 'Pending room expired (timeout)');
           console.log(`[RoomManager] Auto-expired pending room: ${room.roomId}`);
+        }
+
+        // Remove closed rooms from memory after a grace period
+        if (
+          room.state === 'closed' &&
+          room.closedAt &&
+          now - room.closedAt > this.CLOSED_CLEANUP_MS
+        ) {
+          toDelete.push(token);
+        }
+      }
+
+      // Clean up closed rooms from maps
+      for (const token of toDelete) {
+        const room = this.roomsByToken.get(token);
+        if (room) {
+          this.roomsByRoomId.delete(room.roomId);
+          this.roomsByToken.delete(token);
+          console.log(`[RoomManager] Cleaned up closed room: ${room.roomId}`);
         }
       }
     }, this.CLEANUP_INTERVAL_MS);
