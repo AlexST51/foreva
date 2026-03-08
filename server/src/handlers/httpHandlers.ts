@@ -81,8 +81,9 @@ export function createHttpRouter(clientUrl: string): Router {
       return;
     }
 
-    // For the test room, reset if it was somehow closed
-    if (token === 'test' && room.state === 'closed') {
+    // For the test room, always reset to allow fresh joins
+    // (clears any ghost/stale participants from previous sessions)
+    if (token === 'test') {
       room.state = 'pending';
       room.participants = [];
       room.closedAt = undefined;
