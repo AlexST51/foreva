@@ -24,8 +24,7 @@ export default function VideoControls({
         onClick={onToggleMute}
         title={isMuted ? 'Unmute' : 'Mute'}
       >
-        {isMuted ? '🔇' : '🎤'}
-        <span className="control-label">{isMuted ? 'Unmute' : 'Mute'}</span>
+        {isMuted ? 'Unmute' : 'Mute'}
       </button>
 
       <button
@@ -33,8 +32,7 @@ export default function VideoControls({
         onClick={onToggleCamera}
         title={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
       >
-        {isCameraOff ? '📷' : '📹'}
-        <span className="control-label">{isCameraOff ? 'Camera on' : 'Camera off'}</span>
+        {isCameraOff ? 'Camera on' : 'Camera off'}
       </button>
 
       <button
@@ -42,8 +40,7 @@ export default function VideoControls({
         onClick={onEndCall}
         title="End call"
       >
-        📞
-        <span className="control-label">End call</span>
+        End
       </button>
 
       {isCreator && (
@@ -52,8 +49,7 @@ export default function VideoControls({
           onClick={onEndAndExpire}
           title="End call and expire the link permanently"
         >
-          🚫
-          <span className="control-label">End & expire</span>
+          Expire
         </button>
       )}
     </div>
