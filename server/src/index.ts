@@ -75,7 +75,7 @@ setupWebSocketServer(wss);
 server.listen(PORT, HOST, () => {
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
-║  Foreva Server                                          ║
+║  Foreva Server v2                                       ║
 ║  Mode:    ${NODE_ENV.padEnd(46)}║
 ║  Host:    ${HOST.padEnd(46)}║
 ║  HTTP:    http://${HOST}:${String(PORT).padEnd(38 - HOST.length)}║
