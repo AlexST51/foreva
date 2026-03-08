@@ -78,8 +78,20 @@ async function handleJoin(ws: WebSocket, msg: Extract<ClientMessage, { type: 'jo
     return;
   }
 
+  // Build set of currently connected userIds in this room (for stale participant cleanup)
+  const activeUserIds = new Set<string>();
+  const roomSocketSet = roomSockets.get(room.roomId);
+  if (roomSocketSet) {
+    for (const sock of roomSocketSet) {
+      const c = clients.get(sock);
+      if (c && sock.readyState === WebSocket.OPEN) {
+        activeUserIds.add(c.userId);
+      }
+    }
+  }
+
   // Try to add participant
-  const result = roomManager.addParticipant(room, userId, name, language);
+  const result = roomManager.addParticipant(room, userId, name, language, activeUserIds);
   if ('error' in result) {
     send(ws, { type: 'error', message: result.error });
     return;

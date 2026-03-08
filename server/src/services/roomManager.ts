@@ -82,10 +82,31 @@ class RoomManager {
     room: Room,
     userId: string,
     name: string,
-    language: string
+    language: string,
+    activeUserIds?: Set<string>
   ): { role: ParticipantRole } | { error: string } {
     if (room.state === 'closed') {
-      return { error: 'This call link has expired' };
+      // Test room should never stay closed — reset it
+      if (room.joinToken === RoomManager.TEST_TOKEN) {
+        room.state = 'pending';
+        room.participants = [];
+        room.closedAt = undefined;
+        console.log('[RoomManager] Test room was closed, resetting for new join');
+      } else {
+        return { error: 'This call link has expired' };
+      }
+    }
+
+    // For the test room, clean up stale/ghost participants that no longer have active connections
+    if (room.joinToken === RoomManager.TEST_TOKEN && activeUserIds) {
+      const before = room.participants.length;
+      room.participants = room.participants.filter((p) => activeUserIds.has(p.userId));
+      if (room.participants.length < before) {
+        console.log(`[RoomManager] Test room: cleaned ${before - room.participants.length} stale participant(s)`);
+        if (room.participants.length < 2) {
+          room.state = 'pending';
+        }
+      }
     }
 
     if (room.participants.length >= 2) {

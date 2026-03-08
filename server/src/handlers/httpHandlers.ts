@@ -81,6 +81,13 @@ export function createHttpRouter(clientUrl: string): Router {
       return;
     }
 
+    // For the test room, reset if it was somehow closed
+    if (token === 'test' && room.state === 'closed') {
+      room.state = 'pending';
+      room.participants = [];
+      room.closedAt = undefined;
+    }
+
     if (room.state === 'closed') {
       res.status(410).json({ error: 'This call link has expired' });
       return;
