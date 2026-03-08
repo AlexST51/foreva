@@ -239,7 +239,17 @@ export function setupWebSocketServer(wss: WebSocketServer): void {
 
     ws.on('message', async (data) => {
       try {
-        const msg = JSON.parse(data.toString()) as ClientMessage;
+        const raw = JSON.parse(data.toString());
+
+        // Handle keepalive ping before type checking
+        if (raw.type === 'ping') {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'pong' }));
+          }
+          return;
+        }
+
+        const msg = raw as ClientMessage;
 
         switch (msg.type) {
           case 'join':

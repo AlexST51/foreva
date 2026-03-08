@@ -7,6 +7,25 @@ type MessageHandler = (msg: ServerWsMessage) => void;
 export function useWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef<Set<MessageHandler>>(new Set());
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopPing = useCallback(() => {
+    if (pingIntervalRef.current) {
+      clearInterval(pingIntervalRef.current);
+      pingIntervalRef.current = null;
+    }
+  }, []);
+
+  const startPing = useCallback(() => {
+    stopPing();
+    // Send a ping every 25 seconds to keep the connection alive
+    // (Render/Cloudflare typically timeout idle connections at 60-100s)
+    pingIntervalRef.current = setInterval(() => {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'ping' }));
+      }
+    }, 25000);
+  }, [stopPing]);
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -17,11 +36,14 @@ export function useWebSocket() {
 
     ws.onopen = () => {
       console.log('[WS] Connected');
+      startPing();
     };
 
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data) as ServerWsMessage;
+        // Ignore pong responses
+        if ((msg as any).type === 'pong') return;
         for (const handler of handlersRef.current) {
           handler(msg);
         }
@@ -32,19 +54,21 @@ export function useWebSocket() {
 
     ws.onclose = () => {
       console.log('[WS] Disconnected');
+      stopPing();
     };
 
     ws.onerror = (err) => {
       console.error('[WS] Error:', err);
     };
-  }, []);
+  }, [startPing, stopPing]);
 
   const disconnect = useCallback(() => {
+    stopPing();
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
     }
-  }, []);
+  }, [stopPing]);
 
   const send = useCallback((msg: ClientWsMessage) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
