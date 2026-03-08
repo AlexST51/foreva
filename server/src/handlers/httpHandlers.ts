@@ -81,12 +81,17 @@ export function createHttpRouter(clientUrl: string): Router {
       return;
     }
 
-    // For the test room, always reset to allow fresh joins
-    // (clears any ghost/stale participants from previous sessions)
+    // For the test room, always allow joining — skip all state/capacity checks.
+    // Stale participant cleanup happens at WebSocket join time instead.
     if (token === 'test') {
-      room.state = 'pending';
-      room.participants = [];
-      room.closedAt = undefined;
+      const creator = room.participants.find((p: { role: string }) => p.role === 'creator');
+      const response: CallStatusResponse = {
+        state: 'pending',
+        creatorName: creator?.name,
+        creatorLanguage: creator?.language,
+      };
+      res.json(response);
+      return;
     }
 
     if (room.state === 'closed') {
