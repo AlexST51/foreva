@@ -1,31 +1,12 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import { ClientWsMessage } from '../types';
+import { getTurnCredentials } from '../utils/api';
 
-// STUN + TURN servers for NAT traversal.
-// STUN handles ~85% of connections. TURN relays traffic for restrictive NATs.
-const ICE_SERVERS: RTCConfiguration = {
+// Default STUN-only fallback (used until TURN credentials are fetched)
+const DEFAULT_ICE_CONFIG: RTCConfiguration = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun3.l.google.com:19302' },
-    { urls: 'stun:stun4.l.google.com:19302' },
-    // Free TURN servers from Open Relay Project
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
   ],
   iceCandidatePoolSize: 10,
 };
@@ -38,7 +19,20 @@ interface UseWebRTCOptions {
 
 export function useWebRTC({ roomId, send, onRemoteStream }: UseWebRTCOptions) {
   const pcRef = useRef<RTCPeerConnection | null>(null);
+  const iceConfigRef = useRef<RTCConfiguration>(DEFAULT_ICE_CONFIG);
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>('new');
+
+  // Fetch TURN credentials on mount
+  useEffect(() => {
+    let cancelled = false;
+    getTurnCredentials().then((iceServers) => {
+      if (!cancelled && iceServers.length > 0) {
+        iceConfigRef.current = { iceServers, iceCandidatePoolSize: 10 };
+        console.log('[WebRTC] TURN credentials loaded:', iceServers.length, 'servers');
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   /**
    * Create and configure a new RTCPeerConnection.
@@ -50,7 +44,7 @@ export function useWebRTC({ roomId, send, onRemoteStream }: UseWebRTCOptions) {
         pcRef.current.close();
       }
 
-      const pc = new RTCPeerConnection(ICE_SERVERS);
+      const pc = new RTCPeerConnection(iceConfigRef.current);
       pcRef.current = pc;
 
       // Add local tracks to the connection

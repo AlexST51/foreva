@@ -58,6 +58,24 @@ export async function getCallStatus(token: string): Promise<CallStatus> {
 }
 
 /**
+ * Fetch TURN server credentials from the backend.
+ * The backend proxies the Metered.ca API to keep the API key secret.
+ */
+export async function getTurnCredentials(): Promise<RTCIceServer[]> {
+  try {
+    const res = await fetch(`${API_URL}/turn-credentials`);
+    if (!res.ok) throw new Error(`Failed to fetch TURN credentials (${res.status})`);
+    return res.json();
+  } catch (err) {
+    console.warn('[API] Failed to fetch TURN credentials, using STUN fallback:', err);
+    return [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+    ];
+  }
+}
+
+/**
  * Get the WebSocket URL for the current environment.
  */
 export function getWsUrl(): string {

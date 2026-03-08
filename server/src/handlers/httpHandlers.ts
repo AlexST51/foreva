@@ -116,6 +116,46 @@ export function createHttpRouter(clientUrl: string): Router {
   });
 
   /**
+   * GET /turn-credentials
+   * Fetch TURN server credentials from Metered.ca API.
+   * Keeps the API key secret on the server side.
+   */
+  router.get('/turn-credentials', async (_req: Request, res: Response) => {
+    const meteredApiKey = process.env.METERED_API_KEY;
+    const meteredAppName = process.env.METERED_APP_NAME || 'global';
+
+    if (!meteredApiKey) {
+      // Fallback: return just STUN servers if no API key configured
+      console.warn('[HTTP] METERED_API_KEY not set, returning STUN-only config');
+      res.json([
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+      ]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://${meteredAppName}.metered.live/api/v1/turn/credentials?apiKey=${meteredApiKey}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Metered API returned ${response.status}`);
+      }
+
+      const iceServers = await response.json();
+      res.json(iceServers);
+    } catch (err) {
+      console.error('[HTTP] Failed to fetch TURN credentials:', err);
+      // Fallback to STUN only
+      res.json([
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+      ]);
+    }
+  });
+
+  /**
    * GET /health
    * Health check endpoint with aggregated stats (no sensitive data).
    */
