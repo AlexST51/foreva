@@ -199,6 +199,20 @@ export default function VideoCall({
             if (peer) {
               setPeerName(peer.name);
               setStatus('connected');
+              // If we're the receiver and the creator is already here,
+              // we need to create the offer (since the creator's peer:joined already fired)
+              if (role === 'receiver') {
+                const tryCreateOffer = () => {
+                  if (localStreamRef.current) {
+                    console.log('[VideoCall] Receiver creating offer (joined late)');
+                    createOffer(localStreamRef.current);
+                  } else {
+                    console.log('[VideoCall] Receiver waiting for local stream...');
+                    setTimeout(tryCreateOffer, 500);
+                  }
+                };
+                tryCreateOffer();
+              }
             }
           }
           break;
@@ -207,16 +221,33 @@ export default function VideoCall({
           setPeerName(msg.peerName);
           setStatus('connected');
           // Creator creates the offer when peer joins
-          if (role === 'creator' && localStreamRef.current) {
-            createOffer(localStreamRef.current);
+          if (role === 'creator') {
+            const tryCreateOffer = () => {
+              if (localStreamRef.current) {
+                console.log('[VideoCall] Creating offer with local stream');
+                createOffer(localStreamRef.current);
+              } else {
+                console.log('[VideoCall] Waiting for local stream before creating offer...');
+                setTimeout(tryCreateOffer, 500);
+              }
+            };
+            tryCreateOffer();
           }
           break;
 
-        case 'webrtc:offer':
-          if (localStreamRef.current) {
-            handleOffer(msg.offer as RTCSessionDescriptionInit, localStreamRef.current);
-          }
+        case 'webrtc:offer': {
+          const tryHandleOffer = () => {
+            if (localStreamRef.current) {
+              console.log('[VideoCall] Handling incoming offer');
+              handleOffer(msg.offer as RTCSessionDescriptionInit, localStreamRef.current);
+            } else {
+              console.log('[VideoCall] Waiting for local stream to handle offer...');
+              setTimeout(tryHandleOffer, 500);
+            }
+          };
+          tryHandleOffer();
           break;
+        }
 
         case 'webrtc:answer':
           handleAnswer(msg.answer as RTCSessionDescriptionInit);
