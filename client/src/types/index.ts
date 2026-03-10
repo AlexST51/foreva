@@ -42,7 +42,8 @@ export type ClientWsMessage =
   | { type: 'webrtc:iceCandidate'; roomId: string; candidate: RTCIceCandidateInit }
   | { type: 'chat:send'; roomId: string; senderId: string; senderName: string; originalText: string; originalLanguage: string }
   | { type: 'leave'; roomId: string }
-  | { type: 'endAndExpire'; roomId: string };
+  | { type: 'endAndExpire'; roomId: string }
+  | { type: 'recording:detected'; roomId: string };
 
 export type ServerWsMessage =
   | { type: 'joined'; roomId: string; userId: string; role: ParticipantRole; participants: PeerInfo[] }
@@ -53,6 +54,7 @@ export type ServerWsMessage =
   | { type: 'chat:message'; id: string; senderId: string; senderName: string; originalText: string; originalLanguage: string; translatedText: string; translatedLanguage: string; timestamp: number }
   | { type: 'peer:left'; peerId: string }
   | { type: 'room:closed'; reason: string }
+  | { type: 'recording:warning'; peerName: string }
   | { type: 'error'; message: string };
 
 // ─── Language Options ───────────────────────────────────────────────────────

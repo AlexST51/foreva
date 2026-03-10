@@ -50,6 +50,10 @@ export interface Translations {
 
   // Media errors
   cameraNotAvailable: string;
+
+  // Recording detection
+  recordingWarning: string; // "⚠️ {name} may be recording this call"
+  recordingDetectedSelf: string; // "Screen capture detected — the other person has been notified"
 }
 
 const translations: Record<string, Translations> = {
@@ -91,6 +95,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Create a link, share it, and start a video call.',
     ephemeralCalls: 'Ephemeral 1:1 video calls with dual-language chat',
     cameraNotAvailable: 'Camera not available — audio only',
+    recordingWarning: '⚠️ {name} may be recording this call',
+    recordingDetectedSelf: 'Screen capture detected — the other person has been notified',
   },
   es: {
     mute: 'Silenciar',
@@ -130,6 +136,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Crea un enlace, compártelo y comienza una videollamada.',
     ephemeralCalls: 'Videollamadas efímeras 1:1 con chat bilingüe',
     cameraNotAvailable: 'Cámara no disponible — solo audio',
+    recordingWarning: '⚠️ {name} podría estar grabando esta llamada',
+    recordingDetectedSelf: 'Captura de pantalla detectada — la otra persona ha sido notificada',
   },
   fr: {
     mute: 'Muet',
@@ -169,6 +177,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Créez un lien, partagez-le et lancez un appel vidéo.',
     ephemeralCalls: 'Appels vidéo éphémères 1:1 avec chat bilingue',
     cameraNotAvailable: 'Caméra non disponible — audio uniquement',
+    recordingWarning: '⚠️ {name} pourrait enregistrer cet appel',
+    recordingDetectedSelf: 'Capture d\'écran détectée — l\'autre personne a été notifiée',
   },
   de: {
     mute: 'Stumm',
@@ -208,6 +218,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Erstelle einen Link, teile ihn und starte einen Videoanruf.',
     ephemeralCalls: 'Kurzlebige 1:1-Videoanrufe mit zweisprachigem Chat',
     cameraNotAvailable: 'Kamera nicht verfügbar — nur Audio',
+    recordingWarning: '⚠️ {name} nimmt möglicherweise diesen Anruf auf',
+    recordingDetectedSelf: 'Bildschirmaufnahme erkannt — die andere Person wurde benachrichtigt',
   },
   it: {
     mute: 'Muto',
@@ -247,6 +259,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Crea un link, condividilo e avvia una videochiamata.',
     ephemeralCalls: 'Videochiamate effimere 1:1 con chat bilingue',
     cameraNotAvailable: 'Camera non disponibile — solo audio',
+    recordingWarning: '⚠️ {name} potrebbe registrare questa chiamata',
+    recordingDetectedSelf: 'Cattura schermo rilevata — l\'altra persona è stata avvisata',
   },
   pt: {
     mute: 'Mudo',
@@ -286,6 +300,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Crie um link, compartilhe e inicie uma videochamada.',
     ephemeralCalls: 'Videochamadas efêmeras 1:1 com chat bilíngue',
     cameraNotAvailable: 'Câmera não disponível — apenas áudio',
+    recordingWarning: '⚠️ {name} pode estar gravando esta chamada',
+    recordingDetectedSelf: 'Captura de tela detectada — a outra pessoa foi notificada',
   },
   ru: {
     mute: 'Без звука',
@@ -325,6 +341,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Создайте ссылку, поделитесь ей и начните видеозвонок.',
     ephemeralCalls: 'Одноразовые видеозвонки 1:1 с двуязычным чатом',
     cameraNotAvailable: 'Камера недоступна — только аудио',
+    recordingWarning: '⚠️ {name} возможно записывает этот звонок',
+    recordingDetectedSelf: 'Обнаружена запись экрана — другой участник уведомлён',
   },
   zh: {
     mute: '静音',
@@ -364,6 +382,8 @@ const translations: Record<string, Translations> = {
     createShareStart: '创建链接，分享它，开始视频通话。',
     ephemeralCalls: '一次性1对1双语视频通话',
     cameraNotAvailable: '摄像头不可用 — 仅音频',
+    recordingWarning: '⚠️ {name} 可能正在录制此通话',
+    recordingDetectedSelf: '检测到屏幕录制 — 对方已收到通知',
   },
   ja: {
     mute: 'ミュート',
@@ -403,6 +423,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'リンクを作成し、共有して、ビデオ通話を開始。',
     ephemeralCalls: '使い捨て1対1バイリンガルビデオ通話',
     cameraNotAvailable: 'カメラが利用できません — 音声のみ',
+    recordingWarning: '⚠️ {name}がこの通話を録画している可能性があります',
+    recordingDetectedSelf: '画面キャプチャを検出 — 相手に通知されました',
   },
   ko: {
     mute: '음소거',
@@ -442,6 +464,8 @@ const translations: Record<string, Translations> = {
     createShareStart: '링크를 만들고, 공유하고, 영상 통화를 시작하세요.',
     ephemeralCalls: '일회성 1:1 이중 언어 영상 통화',
     cameraNotAvailable: '카메라를 사용할 수 없습니다 — 오디오만',
+    recordingWarning: '⚠️ {name}님이 이 통화를 녹화하고 있을 수 있습니다',
+    recordingDetectedSelf: '화면 캐처 감지됨 — 상대방에게 알림이 전송되었습니다',
   },
   ar: {
     mute: 'كتم',
@@ -481,6 +505,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'أنشئ رابطاً، شاركه، وابدأ مكالمة فيديو.',
     ephemeralCalls: 'مكالمات فيديو مؤقتة 1:1 مع محادثة ثنائية اللغة',
     cameraNotAvailable: 'الكاميرا غير متاحة — صوت فقط',
+    recordingWarning: '⚠️ قد يقوم {name} بتسجيل هذه المكالمة',
+    recordingDetectedSelf: 'تم اكتشاف تسجيل الشاشة — تم إخطار الشخص الآخر',
   },
   hi: {
     mute: 'म्यूट',
@@ -520,6 +546,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'लिंक बनाएं, साझा करें और वीडियो कॉल शुरू करें।',
     ephemeralCalls: 'अस्थायी 1:1 द्विभाषी वीडियो कॉल',
     cameraNotAvailable: 'कैमरा उपलब्ध नहीं — केवल ऑडियो',
+    recordingWarning: '⚠️ {name} इस कॉल को रिकॉर्ड कर सकता है',
+    recordingDetectedSelf: 'स्क्रीन कैप्चर का पता चला — दूसरे व्यक्ति को सूचित किया गया',
   },
   tr: {
     mute: 'Sessiz',
@@ -559,6 +587,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Link oluşturun, paylaşın ve görüntülü arama başlatın.',
     ephemeralCalls: 'Geçici 1:1 çift dilli görüntülü arama',
     cameraNotAvailable: 'Kamera kullanılamıyor — yalnızca ses',
+    recordingWarning: '⚠️ {name} bu aramayı kaydediyor olabilir',
+    recordingDetectedSelf: 'Ekran kaydı algılandı — diğer kişi bilgilendirildi',
   },
   uk: {
     mute: 'Без звуку',
@@ -598,6 +628,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Створіть посилання, поділіться ним і почніть відеодзвінок.',
     ephemeralCalls: 'Одноразові відеодзвінки 1:1 з двомовним чатом',
     cameraNotAvailable: 'Камера недоступна — лише аудіо',
+    recordingWarning: '⚠️ {name} можливо записує цей дзвінок',
+    recordingDetectedSelf: 'Виявлено запис екрану — іншого учасника повідомлено',
   },
   pl: {
     mute: 'Wycisz',
@@ -637,6 +669,8 @@ const translations: Record<string, Translations> = {
     createShareStart: 'Utwórz link, udostępnij go i rozpocznij wideorozmowę.',
     ephemeralCalls: 'Jednorazowe wideorozmowy 1:1 z dwujęzycznym czatem',
     cameraNotAvailable: 'Kamera niedostępna — tylko dźwięk',
+    recordingWarning: '⚠️ {name} może nagrywać tę rozmowę',
+    recordingDetectedSelf: 'Wykryto przechwytywanie ekranu — druga osoba została powiadomiona',
   },
 };
 

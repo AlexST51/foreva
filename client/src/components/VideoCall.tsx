@@ -4,6 +4,7 @@ import { useWebRTC } from '../hooks/useWebRTC';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { ChatMessage, ServerWsMessage, ParticipantRole } from '../types';
 import { t, tReplace } from '../i18n';
+import { useScreenCaptureDetection } from '../hooks/useScreenCaptureDetection';
 import ChatOverlay from './ChatOverlay';
 import VideoControls from './VideoControls';
 
@@ -148,6 +149,7 @@ export default function VideoCall({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [recordingWarning, setRecordingWarning] = useState<string | null>(null);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -277,6 +279,11 @@ export default function VideoCall({
           setStatus('ended');
           break;
 
+        case 'recording:warning':
+          setRecordingWarning(tReplace(t(language).recordingWarning, { name: msg.peerName }));
+          setTimeout(() => setRecordingWarning(null), 8000);
+          break;
+
         case 'room:closed':
           setStatus('ended');
           break;
@@ -360,6 +367,18 @@ export default function VideoCall({
     disconnect();
     setStatus('ended');
   }, [roomId, send, closePeerConnection, stopMedia, disconnect]);
+
+  // Screen capture detection — notify peer via server
+  const handleRecordingDetected = useCallback(() => {
+    if (!roomId) return;
+    send({ type: 'recording:detected', roomId });
+    // Show self-notification
+    setRecordingWarning(t(language).recordingDetectedSelf);
+    setTimeout(() => setRecordingWarning(null), 8000);
+  }, [roomId, send, language]);
+
+  // Enable detection only when connected
+  useScreenCaptureDetection(handleRecordingDetected, status === 'connected');
 
   // Handle send chat message
   const handleSendMessage = useCallback(
@@ -468,6 +487,13 @@ export default function VideoCall({
       {status === 'connected' && peerName && (
         <div className="connection-banner">
           {i18n.connectedWith} <strong>{peerName}</strong>
+        </div>
+      )}
+
+      {/* Recording warning */}
+      {recordingWarning && (
+        <div className="recording-warning">
+          {recordingWarning}
         </div>
       )}
 

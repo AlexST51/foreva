@@ -196,6 +196,15 @@ function handleLeave(ws: WebSocket): void {
   removeClientFromRoom(ws);
 }
 
+function handleRecordingDetected(ws: WebSocket): void {
+  const client = clients.get(ws);
+  if (!client) return;
+
+  // Forward recording warning to the other peer with the detector's name
+  sendToRoom(client.roomId, { type: 'recording:warning', peerName: client.name }, ws);
+  console.log(`[WS] Recording detected by ${client.name} in room ${client.roomId}`);
+}
+
 function handleEndAndExpire(ws: WebSocket, msg: Extract<ClientMessage, { type: 'endAndExpire' }>): void {
   const client = clients.get(ws);
   if (!client) return;
@@ -272,6 +281,9 @@ export function setupWebSocketServer(wss: WebSocketServer): void {
             break;
           case 'endAndExpire':
             handleEndAndExpire(ws, msg);
+            break;
+          case 'recording:detected':
+            handleRecordingDetected(ws);
             break;
           default:
             send(ws, { type: 'error', message: 'Unknown message type' });

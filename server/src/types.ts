@@ -47,7 +47,8 @@ export type ClientMessage =
   | { type: 'webrtc:iceCandidate'; roomId: string; candidate: unknown }
   | { type: 'chat:send'; roomId: string; senderId: string; senderName: string; originalText: string; originalLanguage: string }
   | { type: 'leave'; roomId: string }
-  | { type: 'endAndExpire'; roomId: string };
+  | { type: 'endAndExpire'; roomId: string }
+  | { type: 'recording:detected'; roomId: string };
 
 // Server → Client WebSocket messages
 export type ServerMessage =
@@ -59,6 +60,7 @@ export type ServerMessage =
   | { type: 'chat:message'; id: string; senderId: string; senderName: string; originalText: string; originalLanguage: string; translatedText: string; translatedLanguage: string; timestamp: number }
   | { type: 'peer:left'; peerId: string }
   | { type: 'room:closed'; reason: string }
+  | { type: 'recording:warning'; peerName: string }
   | { type: 'error'; message: string };
 
 export const SUPPORTED_LANGUAGES = [
