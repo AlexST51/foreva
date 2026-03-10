@@ -1,4 +1,21 @@
-const API_URL = import.meta.env.VITE_API_URL || '';
+// Production fallback: if VITE_API_URL is not set and we're on the production domain,
+// use the Render backend URL directly.
+const PRODUCTION_API_URL = 'https://foreva-server.onrender.com';
+
+function getApiUrl(): string {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) return envUrl;
+
+  // In production (deployed on Vercel), use the Render backend
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return PRODUCTION_API_URL;
+  }
+
+  // In development, empty string (Vite proxy handles it)
+  return '';
+}
+
+const API_URL = getApiUrl();
 
 export interface CreateCallResult {
   roomId: string;
@@ -88,6 +105,11 @@ export function getWsUrl(): string {
     const protocol = apiUrl.startsWith('https') ? 'wss:' : 'ws:';
     const host = apiUrl.replace(/^https?:\/\//, '');
     return `${protocol}//${host}`;
+  }
+
+  // Production fallback: if on a non-localhost domain, use the Render backend
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return 'wss://foreva-server.onrender.com';
   }
 
   // In development with Vite proxy, connect directly to the backend
