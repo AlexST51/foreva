@@ -289,51 +289,48 @@ export default function VideoCall({
     return removeHandler;
   }, [addMessageHandler, userId, role, createOffer, handleOffer, handleAnswer, handleIceCandidate]);
 
-  // Initialize: start media, connect WS, join room
+  // Initialize: start media AND connect WS in parallel, then join room
   useEffect(() => {
     let mounted = true;
 
-    async function init() {
-      const stream = await startMedia();
+    // Start media in parallel (don't block WS connection)
+    startMedia().then((stream) => {
       if (!mounted) return;
-
-      // Even if media fails, still connect to the room
-      // (user can still chat and see the peer's video)
       if (stream) {
         localStreamRef.current = stream;
+        console.log('[VideoCall] Local media stream ready');
+      } else {
+        console.warn('[VideoCall] No local media stream (camera denied or unavailable)');
       }
+    });
 
-      // Connect WebSocket
-      connect();
+    // Connect WebSocket immediately (don't wait for media)
+    connect();
 
-      // Wait for WS to actually open, then send join
-      // The 500ms fixed delay was unreliable (cold starts, slow networks)
-      const joinMsg = {
-        type: 'join' as const,
-        joinToken,
-        userId,
-        name: nickname,
-        language,
-      };
+    // Wait for WS to actually open, then send join
+    const joinMsg = {
+      type: 'join' as const,
+      joinToken,
+      userId,
+      name: nickname,
+      language,
+    };
 
-      const trySendJoin = (attempt: number) => {
-        if (!mounted) return;
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          console.log('[VideoCall] WS open, sending join (attempt', attempt, ')');
-          send(joinMsg);
-        } else if (attempt < 20) {
-          // Retry every 500ms for up to 10 seconds
-          setTimeout(() => trySendJoin(attempt + 1), 500);
-        } else {
-          console.error('[VideoCall] Failed to connect WebSocket after 10s');
-          if (mounted) setErrorMsg('Failed to connect to server. Please refresh and try again.');
-        }
-      };
+    const trySendJoin = (attempt: number) => {
+      if (!mounted) return;
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        console.log('[VideoCall] WS open, sending join (attempt', attempt, ')');
+        send(joinMsg);
+      } else if (attempt < 20) {
+        // Retry every 500ms for up to 10 seconds
+        setTimeout(() => trySendJoin(attempt + 1), 500);
+      } else {
+        console.error('[VideoCall] Failed to connect WebSocket after 10s');
+        if (mounted) setErrorMsg('Failed to connect to server. Please refresh and try again.');
+      }
+    };
 
-      trySendJoin(1);
-    }
-
-    init();
+    trySendJoin(1);
 
     return () => {
       mounted = false;
