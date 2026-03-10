@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { SUPPORTED_LANGUAGES } from '../types';
+import { t, tReplace } from '../i18n';
 import { getCallStatus } from '../utils/api';
 import VideoCall from './VideoCall';
 
@@ -50,13 +51,15 @@ export default function JoinCall() {
     setJoined(true);
   }, [nickname]);
 
+  const i18n = t(language);
+
   if (loading) {
     return (
       <div className="page">
         <div className="card">
           <div className="logo">📞</div>
           <h1>Foreva</h1>
-          <p className="subtitle">Checking call link…</p>
+          <p className="subtitle">{i18n.checkingLink}</p>
           <div className="spinner" />
         </div>
       </div>
@@ -71,7 +74,7 @@ export default function JoinCall() {
           <h1>Foreva</h1>
           <div className="error-message">{error}</div>
           <a href="/" className="btn btn-secondary" style={{ marginTop: '1rem', display: 'inline-block', textDecoration: 'none' }}>
-            Create your own call
+            {i18n.createCallLink}
           </a>
         </div>
       </div>
@@ -98,16 +101,16 @@ export default function JoinCall() {
         <h1>Foreva</h1>
         {creatorName && (
           <p className="subtitle">
-            <strong>{creatorName}</strong> is waiting for you
+            <strong>{tReplace(i18n.isWaitingForYou, { name: creatorName })}</strong>
           </p>
         )}
 
         <div className="form-group">
-          <label htmlFor="nickname">Your nickname</label>
+          <label htmlFor="nickname">{i18n.yourNickname}</label>
           <input
             id="nickname"
             type="text"
-            placeholder="Enter your name"
+            placeholder={i18n.enterYourName}
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             maxLength={30}
@@ -116,7 +119,7 @@ export default function JoinCall() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="language">Your language</label>
+          <label htmlFor="language">{i18n.yourLanguage}</label>
           <select
             id="language"
             value={language}
@@ -137,7 +140,7 @@ export default function JoinCall() {
           onClick={handleJoin}
           disabled={joining}
         >
-          {joining ? 'Joining…' : '📹 Join call'}
+          {joining ? i18n.joining : i18n.joinCall}
         </button>
       </div>
     </div>

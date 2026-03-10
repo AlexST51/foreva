@@ -3,6 +3,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import { useWebRTC } from '../hooks/useWebRTC';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { ChatMessage, ServerWsMessage, ParticipantRole } from '../types';
+import { t, tReplace } from '../i18n';
 import ChatOverlay from './ChatOverlay';
 import VideoControls from './VideoControls';
 
@@ -326,7 +327,7 @@ export default function VideoCall({
         setTimeout(() => trySendJoin(attempt + 1), 500);
       } else {
         console.error('[VideoCall] Failed to connect WebSocket after 10s');
-        if (mounted) setErrorMsg('Failed to connect to server. Please refresh and try again.');
+        if (mounted) setErrorMsg(t(language).failedToConnect);
       }
     };
 
@@ -376,18 +377,20 @@ export default function VideoCall({
     [roomId, userId, nickname, language, send]
   );
 
+  const i18n = t(language);
+
   // Ended state
   if (status === 'ended') {
     return (
       <div className="page">
         <div className="card">
           <div className="logo">📞</div>
-          <h1>Call ended</h1>
+          <h1>{i18n.callEnded}</h1>
           <p className="subtitle">
-            {peerName ? `Your call with ${peerName} has ended.` : 'The call has ended.'}
+            {peerName ? tReplace(i18n.callEndedWith, { name: peerName }) : i18n.theCallHasEnded}
           </p>
           <a href="/" className="btn btn-primary" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '1rem' }}>
-            Start a new call
+            {i18n.startNewCall}
           </a>
         </div>
       </div>
@@ -400,10 +403,10 @@ export default function VideoCall({
       <div className="page">
         <div className="card">
           <div className="logo">📞</div>
-          <h1>Error</h1>
+          <h1>{i18n.error}</h1>
           <div className="error-message">{errorMsg}</div>
           <a href="/" className="btn btn-primary" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '1rem' }}>
-            Go back
+            {i18n.goBack}
           </a>
         </div>
       </div>
@@ -426,15 +429,15 @@ export default function VideoCall({
             {status === 'waiting' && (
               <div className="waiting-overlay">
                 <div className="spinner" />
-                <h2>Waiting for the other person…</h2>
+                <h2>{i18n.waitingForOther}</h2>
                 {callUrl && (
                   <div className="share-link-box">
-                    <p>Share this link:</p>
+                    <p>{i18n.shareThisLink}</p>
                     <div className="link-row">
                       <code className="call-url">{callUrl}</code>
                       {onCopyLink && (
                         <button className="btn btn-small" onClick={onCopyLink}>
-                          {copied ? '✓ Copied!' : '📋 Copy'}
+                          {copied ? i18n.copied : i18n.copy}
                         </button>
                       )}
                     </div>
@@ -445,13 +448,13 @@ export default function VideoCall({
             {status === 'connecting' && (
               <div className="waiting-overlay">
                 <div className="spinner" />
-                <h2>Connecting…</h2>
+                <h2>{i18n.connecting}</h2>
               </div>
             )}
             {status === 'connected' && peerName && (
               <div className="waiting-overlay">
-                <h2>Connected with {peerName}</h2>
-                <p>Setting up video…</p>
+                <h2>{i18n.connectedWith} {peerName}</h2>
+                <p>{i18n.settingUpVideo}</p>
               </div>
             )}
           </div>
@@ -464,7 +467,7 @@ export default function VideoCall({
       {/* Connection status banner */}
       {status === 'connected' && peerName && (
         <div className="connection-banner">
-          Connected with <strong>{peerName}</strong>
+          {i18n.connectedWith} <strong>{peerName}</strong>
         </div>
       )}
 
@@ -481,6 +484,7 @@ export default function VideoCall({
         myLanguage={language}
         userId={userId}
         onSendMessage={handleSendMessage}
+        i18n={i18n}
       />
 
       {/* Controls */}
@@ -492,6 +496,7 @@ export default function VideoCall({
         onToggleCamera={toggleCamera}
         onEndCall={handleEndCall}
         onEndAndExpire={handleEndAndExpire}
+        i18n={i18n}
       />
     </div>
   );

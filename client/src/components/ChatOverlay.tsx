@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '../types';
+import { Translations } from '../i18n';
 
 interface ChatOverlayProps {
   messages: ChatMessage[];
   myLanguage: string;
   userId: string;
   onSendMessage: (text: string) => void;
+  i18n: Translations;
 }
 
-export default function ChatOverlay({ messages, myLanguage, userId, onSendMessage }: ChatOverlayProps) {
+export default function ChatOverlay({ messages, myLanguage, userId, onSendMessage, i18n }: ChatOverlayProps) {
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,7 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
   return (
     <div className={`chat-overlay ${isExpanded ? 'expanded' : ''}`}>
       <div className="chat-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <span>💬 Chat {messages.length > 0 && `(${messages.length})`}</span>
+        <span>💬 {i18n.chat} {messages.length > 0 && `(${messages.length})`}</span>
         <span className="chat-toggle">{isExpanded ? '▼' : '▲'}</span>
       </div>
 
@@ -101,14 +103,14 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
         <input
           ref={inputRef}
           type="text"
-          placeholder="Type a message…"
+          placeholder={i18n.typeMessage}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           className="chat-input"
         />
         <button className="btn btn-send" onClick={handleSend} disabled={!input.trim()}>
-          Send
+          {i18n.send}
         </button>
       </div>
     </div>

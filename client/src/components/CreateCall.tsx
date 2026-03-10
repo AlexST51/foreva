@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { SUPPORTED_LANGUAGES } from '../types';
+import { t } from '../i18n';
 import { createCall } from '../utils/api';
 import VideoCall from './VideoCall';
 
@@ -57,6 +58,8 @@ export default function CreateCall() {
     }
   }, [callData]);
 
+  const i18n = t(language);
+
   // If call has been created, show the VideoCall component
   if (callData) {
     return (
@@ -80,14 +83,14 @@ export default function CreateCall() {
       <div className="card">
         <div className="logo">📞</div>
         <h1>Foreva</h1>
-        <p className="subtitle">Ephemeral 1:1 video calls with dual-language chat</p>
+        <p className="subtitle">{i18n.ephemeralCalls}</p>
 
         <div className="form-group">
-          <label htmlFor="nickname">Your nickname</label>
+          <label htmlFor="nickname">{i18n.yourNickname}</label>
           <input
             id="nickname"
             type="text"
-            placeholder="Enter your name"
+            placeholder={i18n.enterYourName}
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             maxLength={30}
@@ -96,7 +99,7 @@ export default function CreateCall() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="language">Your language</label>
+          <label htmlFor="language">{i18n.yourLanguage}</label>
           <select
             id="language"
             value={language}
@@ -117,11 +120,11 @@ export default function CreateCall() {
           onClick={handleCreate}
           disabled={loading}
         >
-          {loading ? 'Creating…' : '🔗 Create call-me link'}
+          {loading ? i18n.joining : i18n.createCallLink}
         </button>
 
         <p className="hint">
-          No sign-up needed. Create a link, share it, and start a video call.
+          {i18n.noSignupNeeded}
         </p>
       </div>
     </div>
