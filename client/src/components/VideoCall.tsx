@@ -7,6 +7,7 @@ import { t, tReplace } from '../i18n';
 import { useScreenCaptureDetection } from '../hooks/useScreenCaptureDetection';
 import ChatOverlay from './ChatOverlay';
 import VideoControls from './VideoControls';
+import Logo from './Logo';
 
 /* ─── Draggable PiP Component ────────────────────────────────────────────── */
 
@@ -403,7 +404,7 @@ export default function VideoCall({
     return (
       <div className="page">
         <div className="card">
-          <div className="logo">📞</div>
+          <div className="logo"><Logo /></div>
           <h1>{i18n.callEnded}</h1>
           <p className="subtitle">
             {peerName ? tReplace(i18n.callEndedWith, { name: peerName }) : i18n.theCallHasEnded}
@@ -421,7 +422,7 @@ export default function VideoCall({
     return (
       <div className="page">
         <div className="card">
-          <div className="logo">📞</div>
+          <div className="logo"><Logo /></div>
           <h1>{i18n.error}</h1>
           <div className="error-message">{errorMsg}</div>
           <a href="/" className="btn btn-primary" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '1rem' }}>

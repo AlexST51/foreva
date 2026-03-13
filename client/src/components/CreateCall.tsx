@@ -3,6 +3,7 @@ import { SUPPORTED_LANGUAGES } from '../types';
 import { t } from '../i18n';
 import { createCall } from '../utils/api';
 import VideoCall from './VideoCall';
+import Logo from './Logo';
 
 export default function CreateCall() {
   const [nickname, setNickname] = useState('');
@@ -81,8 +82,8 @@ export default function CreateCall() {
   return (
     <div className="page">
       <div className="card">
-        <div className="logo">📞</div>
-        <h1>Foreva</h1>
+        <div className="logo"><Logo /></div>
+        <h1>parlez.me</h1>
         <p className="subtitle">{i18n.ephemeralCalls}</p>
 
         <div className="form-group">

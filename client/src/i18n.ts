@@ -1,5 +1,5 @@
 /**
- * Internationalization (i18n) translations for the Foreva UI.
+ * Internationalization (i18n) translations for the parlez.me UI.
  * Each user sees the interface in their selected language.
  */
 
