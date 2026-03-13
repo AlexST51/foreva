@@ -32,6 +32,9 @@ app.use(
       // Allow the configured client URL
       if (origin === CLIENT_URL) return callback(null, true);
       
+      // Allow the custom domain (parlez.me)
+      if (origin === 'https://parlez.me' || origin === 'https://www.parlez.me') return callback(null, true);
+      
       // Allow all Vercel preview/deployment URLs for this project
       if (origin.endsWith('.vercel.app')) return callback(null, true);
       

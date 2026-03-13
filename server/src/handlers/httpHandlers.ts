@@ -43,10 +43,11 @@ export function createHttpRouter(clientUrl: string): Router {
     const room = roomManager.createRoom();
     const userId = generateUserId();
 
-    // Build the call URL
-    // In production, this would use the actual domain (HTTPS).
-    // The clientUrl is the front-end origin.
-    const callUrl = `${clientUrl}/c/${room.joinToken}`;
+    // Build the call URL using the request's origin when available,
+    // so the link matches the domain the user is actually on (e.g. parlez.me).
+    const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || clientUrl;
+    const baseUrl = origin.replace(/\/+$/, '');
+    const callUrl = `${baseUrl}/c/${room.joinToken}`;
 
     const response: CreateCallResponse = {
       roomId: room.roomId,
