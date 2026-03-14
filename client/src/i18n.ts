@@ -67,6 +67,10 @@ export interface Translations {
   voiceInput: string;
   stopListening: string;
   listening: string;
+
+  // Background blur
+  blurOn: string;
+  blurOff: string;
 }
 
 const translations: Record<string, Translations> = {
@@ -117,6 +121,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Voice input',
     stopListening: 'Stop listening',
     listening: 'Listening…',
+    blurOn: 'Blur',
+    blurOff: 'No blur',
   },
   es: {
     mute: 'Silenciar',
@@ -165,6 +171,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Entrada de voz',
     stopListening: 'Dejar de escuchar',
     listening: 'Escuchando…',
+    blurOn: 'Difuminar',
+    blurOff: 'Sin difum.',
   },
   fr: {
     mute: 'Muet',
@@ -213,6 +221,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Saisie vocale',
     stopListening: 'Arrêter l\'écoute',
     listening: 'Écoute en cours…',
+    blurOn: 'Flou',
+    blurOff: 'Net',
   },
   de: {
     mute: 'Stumm',
@@ -261,6 +271,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Spracheingabe',
     stopListening: 'Zuhören beenden',
     listening: 'Hört zu…',
+    blurOn: 'Unscharf',
+    blurOff: 'Scharf',
   },
   it: {
     mute: 'Muto',
@@ -309,6 +321,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Input vocale',
     stopListening: 'Smetti di ascoltare',
     listening: 'In ascolto…',
+    blurOn: 'Sfocato',
+    blurOff: 'Nitido',
   },
   pt: {
     mute: 'Mudo',
@@ -357,6 +371,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Entrada de voz',
     stopListening: 'Parar de ouvir',
     listening: 'Ouvindo…',
+    blurOn: 'Desfocar',
+    blurOff: 'Nítido',
   },
   ru: {
     mute: 'Без звука',
@@ -405,6 +421,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Голосовой ввод',
     stopListening: 'Остановить прослушивание',
     listening: 'Слушаю…',
+    blurOn: 'Размытие',
+    blurOff: 'Без разм.',
   },
   zh: {
     mute: '静音',
@@ -453,6 +471,8 @@ const translations: Record<string, Translations> = {
     voiceInput: '语音输入',
     stopListening: '停止收听',
     listening: '正在收听…',
+    blurOn: '模糊',
+    blurOff: '清晰',
   },
   ja: {
     mute: 'ミュート',
@@ -501,6 +521,8 @@ const translations: Record<string, Translations> = {
     voiceInput: '音声入力',
     stopListening: '聞き取りを停止',
     listening: '聞き取り中…',
+    blurOn: 'ぼかし',
+    blurOff: 'クリア',
   },
   ko: {
     mute: '음소거',
@@ -549,6 +571,8 @@ const translations: Record<string, Translations> = {
     voiceInput: '음성 입력',
     stopListening: '듣기 중지',
     listening: '듣는 중…',
+    blurOn: '흐림',
+    blurOff: '선명',
   },
   ar: {
     mute: 'كتم',
@@ -597,6 +621,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'إدخال صوتي',
     stopListening: 'إيقاف الاستماع',
     listening: 'جاري الاستماع…',
+    blurOn: 'ضبابي',
+    blurOff: 'واضح',
   },
   hi: {
     mute: 'म्यूट',
@@ -645,6 +671,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'ध्वनि इनपुट',
     stopListening: 'सुनना बंद करें',
     listening: 'सुन रहा है…',
+    blurOn: 'धुंधला',
+    blurOff: 'स्पष्ट',
   },
   tr: {
     mute: 'Sessiz',
@@ -693,6 +721,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Sesli giriş',
     stopListening: 'Dinlemeyi durdur',
     listening: 'Dinliyor…',
+    blurOn: 'Bulanık',
+    blurOff: 'Net',
   },
   uk: {
     mute: 'Без звуку',
@@ -741,6 +771,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Голосовий ввід',
     stopListening: 'Зупинити прослуховування',
     listening: 'Слухаю…',
+    blurOn: 'Розмиття',
+    blurOff: 'Чітко',
   },
   pl: {
     mute: 'Wycisz',
@@ -789,6 +821,8 @@ const translations: Record<string, Translations> = {
     voiceInput: 'Wprowadzanie głosowe',
     stopListening: 'Przestań słuchać',
     listening: 'Słucham…',
+    blurOn: 'Rozmycie',
+    blurOff: 'Ostro',
   },
 };
 

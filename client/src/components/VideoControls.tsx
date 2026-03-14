@@ -5,8 +5,11 @@ interface VideoControlsProps {
   isMuted: boolean;
   isCameraOff: boolean;
   isCreator: boolean;
+  isBlurEnabled: boolean;
+  isBlurLoading: boolean;
   onToggleMute: () => void;
   onToggleCamera: () => void;
+  onToggleBlur: () => void;
   onEndCall: () => void;
   onEndAndExpire: () => void;
   i18n: Translations;
@@ -16,8 +19,11 @@ export default function VideoControls({
   isMuted,
   isCameraOff,
   isCreator,
+  isBlurEnabled,
+  isBlurLoading,
   onToggleMute,
   onToggleCamera,
+  onToggleBlur,
   onEndCall,
   onEndAndExpire,
   i18n,
@@ -52,6 +58,15 @@ export default function VideoControls({
           title={isCameraOff ? i18n.cameraOn : i18n.cameraOff}
         >
           {isCameraOff ? i18n.cameraOn : i18n.cameraOff}
+        </button>
+
+        <button
+          className={`control-btn ${isBlurEnabled ? 'active' : ''}`}
+          onClick={onToggleBlur}
+          disabled={isBlurLoading}
+          title={isBlurEnabled ? i18n.blurOff : i18n.blurOn}
+        >
+          {isBlurLoading ? '⏳' : isBlurEnabled ? i18n.blurOff : i18n.blurOn}
         </button>
 
         <button

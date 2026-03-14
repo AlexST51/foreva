@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useWebRTC } from '../hooks/useWebRTC';
 import { useMediaDevices } from '../hooks/useMediaDevices';
+import { useBackgroundBlur } from '../hooks/useBackgroundBlur';
 import { ChatMessage, ServerWsMessage, ParticipantRole } from '../types';
 import { t, tReplace } from '../i18n';
 import { useScreenCaptureDetection } from '../hooks/useScreenCaptureDetection';
@@ -189,8 +190,10 @@ export default function VideoCall({
 
   const { localStream, isMuted, isCameraOff, error: mediaError, startMedia, stopMedia, toggleMute, toggleCamera } = useMediaDevices();
   const { connect, disconnect, send, addMessageHandler, wsRef } = useWebSocket();
+  const { isBlurEnabled, isLoading: isBlurLoading, enableBlur, disableBlur, cleanup: cleanupBlur } = useBackgroundBlur();
 
   const localStreamRef = useRef<MediaStream | null>(null);
+  const rawStreamRef = useRef<MediaStream | null>(null);
 
   const onRemoteStream = useCallback((stream: MediaStream) => {
     setRemoteStream(stream);
@@ -202,6 +205,7 @@ export default function VideoCall({
     handleAnswer,
     handleIceCandidate,
     closePeerConnection,
+    pcRef,
   } = useWebRTC({
     roomId,
     send,
@@ -379,27 +383,75 @@ export default function VideoCall({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Replace the video track in the peer connection (no renegotiation needed)
+  const replaceVideoTrackInPC = useCallback((newStream: MediaStream) => {
+    const pc = pcRef.current;
+    if (!pc) return;
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    if (!newVideoTrack) return;
+    const senders = pc.getSenders();
+    const videoSender = senders.find((s) => s.track?.kind === 'video');
+    if (videoSender) {
+      videoSender.replaceTrack(newVideoTrack).catch((err) => {
+        console.warn('[Blur] Failed to replace video track in PC:', err);
+      });
+    }
+  }, [pcRef]);
+
+  // Handle background blur toggle
+  const handleToggleBlur = useCallback(async () => {
+    const raw = rawStreamRef.current || localStreamRef.current;
+    if (!raw) return;
+
+    if (isBlurEnabled) {
+      // Disable blur — swap back to raw stream
+      const rawStream = disableBlur();
+      if (rawStream) {
+        localStreamRef.current = rawStream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = rawStream;
+        }
+        replaceVideoTrackInPC(rawStream);
+      }
+    } else {
+      // Enable blur — process raw stream through canvas
+      if (!rawStreamRef.current) {
+        rawStreamRef.current = raw;
+      }
+      const blurredStream = await enableBlur(raw);
+      if (blurredStream) {
+        localStreamRef.current = blurredStream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = blurredStream;
+        }
+        replaceVideoTrackInPC(blurredStream);
+      }
+    }
+  }, [isBlurEnabled, enableBlur, disableBlur, replaceVideoTrackInPC]);
+
   // Handle end call
   const handleEndCall = useCallback(() => {
     if (roomId) {
       send({ type: 'leave', roomId });
     }
+    cleanupBlur();
     closePeerConnection();
     stopMedia();
     disconnect();
     setStatus('ended');
-  }, [roomId, send, closePeerConnection, stopMedia, disconnect]);
+  }, [roomId, send, cleanupBlur, closePeerConnection, stopMedia, disconnect]);
 
   // Handle end & expire (creator only)
   const handleEndAndExpire = useCallback(() => {
     if (roomId) {
       send({ type: 'endAndExpire', roomId });
     }
+    cleanupBlur();
     closePeerConnection();
     stopMedia();
     disconnect();
     setStatus('ended');
-  }, [roomId, send, closePeerConnection, stopMedia, disconnect]);
+  }, [roomId, send, cleanupBlur, closePeerConnection, stopMedia, disconnect]);
 
   // Screen capture detection — notify peer via server
   const handleRecordingDetected = useCallback(() => {
@@ -591,8 +643,11 @@ export default function VideoCall({
         isMuted={isMuted}
         isCameraOff={isCameraOff}
         isCreator={role === 'creator'}
+        isBlurEnabled={isBlurEnabled}
+        isBlurLoading={isBlurLoading}
         onToggleMute={toggleMute}
         onToggleCamera={toggleCamera}
+        onToggleBlur={handleToggleBlur}
         onEndCall={handleEndCall}
         onEndAndExpire={handleEndAndExpire}
         i18n={i18n}
