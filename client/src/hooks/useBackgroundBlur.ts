@@ -34,7 +34,7 @@ export function useBackgroundBlur() {
 
       segmentation.setOptions({
         modelSelection: 1, // 1 = landscape model (better quality), 0 = general
-        selfieMode: true,
+        selfieMode: false, // CSS scaleX(-1) already mirrors the local video preview
       });
 
       // Set up the results callback
