@@ -774,6 +774,49 @@ html, body {
   }
 }
 
+/* ─── Speech Recognition ─────────────────────────────────────────────────── */
+
+.btn-mic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-mic:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.btn-mic.listening {
+  background: rgba(231, 76, 60, 0.8);
+  animation: mic-pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+}
+
+@keyframes mic-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+.speech-interim {
+  padding: 0.3rem 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-style: italic;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
 /* ─── Confirmation Dialog ────────────────────────────────────────────────── */
 
 .confirm-overlay {

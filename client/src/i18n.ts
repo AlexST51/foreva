@@ -62,6 +62,11 @@ export interface Translations {
 
   // Home screen tip
   addToHomeScreen: string;
+
+  // Speech recognition
+  voiceInput: string;
+  stopListening: string;
+  listening: string;
 }
 
 const translations: Record<string, Translations> = {
@@ -109,6 +114,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Are you sure? This will end the call and permanently delete the link.',
     cancel: 'Cancel',
     addToHomeScreen: 'Add this app to your home screen for instant access.\nOn iPhone use the Share button in Safari; on Android use the browser menu, then choose "Add to Home screen".',
+    voiceInput: 'Voice input',
+    stopListening: 'Stop listening',
+    listening: 'Listening…',
   },
   es: {
     mute: 'Silenciar',
@@ -154,6 +162,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: '¿Estás seguro? Esto finalizará la llamada y eliminará el enlace permanentemente.',
     cancel: 'Cancelar',
     addToHomeScreen: 'Añade esta app a tu pantalla de inicio para acceso rápido.\nEn iPhone usa el botón Compartir en Safari; en Android usa el menú del navegador y elige "Añadir a pantalla de inicio".',
+    voiceInput: 'Entrada de voz',
+    stopListening: 'Dejar de escuchar',
+    listening: 'Escuchando…',
   },
   fr: {
     mute: 'Muet',
@@ -199,6 +210,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Êtes-vous sûr ? Cela terminera l\'appel et supprimera le lien définitivement.',
     cancel: 'Annuler',
     addToHomeScreen: 'Ajoutez cette app à votre écran d\'accueil pour un accès rapide.\nSur iPhone, utilisez le bouton Partager dans Safari ; sur Android, utilisez le menu du navigateur puis « Ajouter à l\'écran d\'accueil ».',
+    voiceInput: 'Saisie vocale',
+    stopListening: 'Arrêter l\'écoute',
+    listening: 'Écoute en cours…',
   },
   de: {
     mute: 'Stumm',
@@ -244,6 +258,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Bist du sicher? Der Anruf wird beendet und der Link dauerhaft gelöscht.',
     cancel: 'Abbrechen',
     addToHomeScreen: 'Füge diese App deinem Startbildschirm hinzu für schnellen Zugriff.\nAuf dem iPhone nutze den Teilen-Button in Safari; auf Android nutze das Browser-Menü und wähle „Zum Startbildschirm hinzufügen".',
+    voiceInput: 'Spracheingabe',
+    stopListening: 'Zuhören beenden',
+    listening: 'Hört zu…',
   },
   it: {
     mute: 'Muto',
@@ -289,6 +306,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Sei sicuro? La chiamata verrà terminata e il link eliminato permanentemente.',
     cancel: 'Annulla',
     addToHomeScreen: 'Aggiungi questa app alla schermata iniziale per un accesso rapido.\nSu iPhone usa il pulsante Condividi in Safari; su Android usa il menu del browser e scegli "Aggiungi a schermata Home".',
+    voiceInput: 'Input vocale',
+    stopListening: 'Smetti di ascoltare',
+    listening: 'In ascolto…',
   },
   pt: {
     mute: 'Mudo',
@@ -334,6 +354,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Tem certeza? Isso encerrará a chamada e excluirá o link permanentemente.',
     cancel: 'Cancelar',
     addToHomeScreen: 'Adicione este app à tela inicial para acesso rápido.\nNo iPhone use o botão Compartilhar no Safari; no Android use o menu do navegador e escolha "Adicionar à tela inicial".',
+    voiceInput: 'Entrada de voz',
+    stopListening: 'Parar de ouvir',
+    listening: 'Ouvindo…',
   },
   ru: {
     mute: 'Без звука',
@@ -379,6 +402,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Вы уверены? Звонок будет завершён, а ссылка удалена навсегда.',
     cancel: 'Отмена',
     addToHomeScreen: 'Добавьте это приложение на главный экран для быстрого доступа.\nНа iPhone используйте кнопку «Поделиться» в Safari; на Android используйте меню браузера и выберите «Добавить на главный экран».',
+    voiceInput: 'Голосовой ввод',
+    stopListening: 'Остановить прослушивание',
+    listening: 'Слушаю…',
   },
   zh: {
     mute: '静音',
@@ -424,6 +450,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: '确定吗？这将结束通话并永久删除链接。',
     cancel: '取消',
     addToHomeScreen: '将此应用添加到主屏幕以便快速访问。\n在iPhone上使用Safari的分享按钮；在Android上使用浏览器菜单，然后选择"添加到主屏幕"。',
+    voiceInput: '语音输入',
+    stopListening: '停止收听',
+    listening: '正在收听…',
   },
   ja: {
     mute: 'ミュート',
@@ -469,6 +498,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: '本当によろしいですか？通話が終了し、リンクが永久に削除されます。',
     cancel: 'キャンセル',
     addToHomeScreen: 'ホーム画面に追加して素早くアクセス。\niPhoneではSafariの共有ボタンを使用；Androidではブラウザメニューから「ホーム画面に追加」を選択。',
+    voiceInput: '音声入力',
+    stopListening: '聞き取りを停止',
+    listening: '聞き取り中…',
   },
   ko: {
     mute: '음소거',
@@ -514,6 +546,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: '확실합니까? 통화가 종료되고 링크가 영구적으로 삭제됩니다.',
     cancel: '취소',
     addToHomeScreen: '홈 화면에 추가하여 빠르게 접근하세요.\niPhone에서는 Safari의 공유 버튼을 사용; Android에서는 브라우저 메뉴에서 "홈 화면에 추가"를 선택.',
+    voiceInput: '음성 입력',
+    stopListening: '듣기 중지',
+    listening: '듣는 중…',
   },
   ar: {
     mute: 'كتم',
@@ -559,6 +594,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'هل أنت متأكد؟ سيتم إنهاء المكالمة وحذف الرابط نهائياً.',
     cancel: 'إلغاء',
     addToHomeScreen: 'أضف هذا التطبيق إلى شاشتك الرئيسية للوصول السريع.\nعلى iPhone استخدم زر المشاركة في Safari؛ على Android استخدم قائمة المتصفح ثم اختر "إضافة إلى الشاشة الرئيسية".',
+    voiceInput: 'إدخال صوتي',
+    stopListening: 'إيقاف الاستماع',
+    listening: 'جاري الاستماع…',
   },
   hi: {
     mute: 'म्यूट',
@@ -604,6 +642,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'क्या आप सुनिश्चित हैं? कॉल समाप्त हो जाएगी और लिंक स्थायी रूप से हटा दिया जाएगा।',
     cancel: 'रद्द करें',
     addToHomeScreen: 'त्वरित पहुंच के लिए इस ऐप को होम स्क्रीन पर जोड़ें।\niPhone पर Safari में शेयर बटन का उपयोग करें; Android पर ब्राउज़र मेनू से "होम स्क्रीन पर जोड़ें" चुनें।',
+    voiceInput: 'ध्वनि इनपुट',
+    stopListening: 'सुनना बंद करें',
+    listening: 'सुन रहा है…',
   },
   tr: {
     mute: 'Sessiz',
@@ -649,6 +690,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Emin misiniz? Arama sonlandırılacak ve link kalıcı olarak silinecek.',
     cancel: 'İptal',
     addToHomeScreen: 'Hızlı erişim için bu uygulamayı ana ekranınıza ekleyin.\niPhone\'da Safari\'deki Paylaş düğmesini kullanın; Android\'de tarayıcı menüsünden "Ana ekrana ekle"yi seçin.',
+    voiceInput: 'Sesli giriş',
+    stopListening: 'Dinlemeyi durdur',
+    listening: 'Dinliyor…',
   },
   uk: {
     mute: 'Без звуку',
@@ -694,6 +738,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Ви впевнені? Дзвінок буде завершено, а посилання видалено назавжди.',
     cancel: 'Скасувати',
     addToHomeScreen: 'Додайте цей додаток на головний екран для швидкого доступу.\nНа iPhone використовуйте кнопку «Поділитися» в Safari; на Android використовуйте меню браузера та оберіть «Додати на головний екран».',
+    voiceInput: 'Голосовий ввід',
+    stopListening: 'Зупинити прослуховування',
+    listening: 'Слухаю…',
   },
   pl: {
     mute: 'Wycisz',
@@ -739,6 +786,9 @@ const translations: Record<string, Translations> = {
     confirmExpireLink: 'Czy jesteś pewien? Rozmowa zostanie zakończona, a link trwale usunięty.',
     cancel: 'Anuluj',
     addToHomeScreen: 'Dodaj tę aplikację do ekranu głównego, aby mieć szybki dostęp.\nNa iPhonie użyj przycisku Udostępnij w Safari; na Androidzie użyj menu przeglądarki i wybierz „Dodaj do ekranu głównego".',
+    voiceInput: 'Wprowadzanie głosowe',
+    stopListening: 'Przestań słuchać',
+    listening: 'Słucham…',
   },
 };
 

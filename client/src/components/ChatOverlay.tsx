@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage } from '../types';
 import { Translations } from '../i18n';
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 
 interface ChatOverlayProps {
   messages: ChatMessage[];
@@ -15,6 +16,8 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
   const [isExpanded, setIsExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { isListening, interimText, isSupported, toggleListening } = useSpeechRecognition(myLanguage);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -50,6 +53,17 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
       e.preventDefault();
       handleSend();
     }
+  };
+
+  // Callback for when speech recognition produces a final result
+  const handleSpeechFinal = useCallback((text: string) => {
+    if (text.trim()) {
+      onSendMessage(text.trim());
+    }
+  }, [onSendMessage]);
+
+  const handleMicClick = () => {
+    toggleListening(handleSpeechFinal);
   };
 
   /**
@@ -99,11 +113,27 @@ export default function ChatOverlay({ messages, myLanguage, userId, onSendMessag
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Interim speech text preview */}
+      {isListening && interimText && (
+        <div className="speech-interim">
+          {interimText}
+        </div>
+      )}
+
       <div className="chat-input-row">
+        {isSupported && (
+          <button
+            className={`btn-mic ${isListening ? 'listening' : ''}`}
+            onClick={handleMicClick}
+            title={isListening ? i18n.stopListening : i18n.voiceInput}
+          >
+            {isListening ? '⏹' : '🎤'}
+          </button>
+        )}
         <input
           ref={inputRef}
           type="text"
-          placeholder={i18n.typeMessage}
+          placeholder={isListening ? i18n.listening : i18n.typeMessage}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
