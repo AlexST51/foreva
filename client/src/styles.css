@@ -755,6 +755,83 @@ html, body {
   }
 }
 
+/* ─── Confirmation Dialog ────────────────────────────────────────────────── */
+
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.confirm-dialog {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+}
+
+.confirm-message {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.confirm-cancel {
+  flex: 1;
+}
+
+.confirm-end {
+  flex: 1;
+  background: var(--danger);
+  color: white;
+}
+
+.confirm-end:hover {
+  background: var(--danger-hover);
+}
+
+.confirm-expire {
+  flex: 1;
+  background: #8b0000;
+  color: white;
+}
+
+.confirm-expire:hover {
+  background: #a00000;
+}
+
+/* ─── Home Screen Tip ────────────────────────────────────────────────────── */
+
+.home-screen-tip {
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
 /* ─── Landscape Mode (mobile) ────────────────────────────────────────────── */
 
 @media (max-height: 500px) and (orientation: landscape) {

@@ -54,6 +54,14 @@ export interface Translations {
   // Recording detection
   recordingWarning: string; // "⚠️ {name} may be recording this call"
   recordingDetectedSelf: string; // "Screen capture detected — the other person has been notified"
+
+  // Confirmation dialogs
+  confirmEndCall: string;
+  confirmExpireLink: string;
+  cancel: string;
+
+  // Home screen tip
+  addToHomeScreen: string;
 }
 
 const translations: Record<string, Translations> = {
@@ -97,6 +105,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Camera not available — audio only',
     recordingWarning: '⚠️ {name} may be recording this call',
     recordingDetectedSelf: 'Screen capture detected — the other person has been notified',
+    confirmEndCall: 'Are you sure you want to end this call?',
+    confirmExpireLink: 'Are you sure? This will end the call and permanently delete the link.',
+    cancel: 'Cancel',
+    addToHomeScreen: 'Add this app to your home screen for instant access.\nOn iPhone use the Share button in Safari; on Android use the browser menu, then choose "Add to Home screen".',
   },
   es: {
     mute: 'Silenciar',
@@ -138,6 +150,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Cámara no disponible — solo audio',
     recordingWarning: '⚠️ {name} podría estar grabando esta llamada',
     recordingDetectedSelf: 'Captura de pantalla detectada — la otra persona ha sido notificada',
+    confirmEndCall: '¿Estás seguro de que quieres finalizar esta llamada?',
+    confirmExpireLink: '¿Estás seguro? Esto finalizará la llamada y eliminará el enlace permanentemente.',
+    cancel: 'Cancelar',
+    addToHomeScreen: 'Añade esta app a tu pantalla de inicio para acceso rápido.\nEn iPhone usa el botón Compartir en Safari; en Android usa el menú del navegador y elige "Añadir a pantalla de inicio".',
   },
   fr: {
     mute: 'Muet',
@@ -179,6 +195,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Caméra non disponible — audio uniquement',
     recordingWarning: '⚠️ {name} pourrait enregistrer cet appel',
     recordingDetectedSelf: 'Capture d\'écran détectée — l\'autre personne a été notifiée',
+    confirmEndCall: 'Êtes-vous sûr de vouloir terminer cet appel ?',
+    confirmExpireLink: 'Êtes-vous sûr ? Cela terminera l\'appel et supprimera le lien définitivement.',
+    cancel: 'Annuler',
+    addToHomeScreen: 'Ajoutez cette app à votre écran d\'accueil pour un accès rapide.\nSur iPhone, utilisez le bouton Partager dans Safari ; sur Android, utilisez le menu du navigateur puis « Ajouter à l\'écran d\'accueil ».',
   },
   de: {
     mute: 'Stumm',
@@ -220,6 +240,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Kamera nicht verfügbar — nur Audio',
     recordingWarning: '⚠️ {name} nimmt möglicherweise diesen Anruf auf',
     recordingDetectedSelf: 'Bildschirmaufnahme erkannt — die andere Person wurde benachrichtigt',
+    confirmEndCall: 'Bist du sicher, dass du den Anruf beenden möchtest?',
+    confirmExpireLink: 'Bist du sicher? Der Anruf wird beendet und der Link dauerhaft gelöscht.',
+    cancel: 'Abbrechen',
+    addToHomeScreen: 'Füge diese App deinem Startbildschirm hinzu für schnellen Zugriff.\nAuf dem iPhone nutze den Teilen-Button in Safari; auf Android nutze das Browser-Menü und wähle „Zum Startbildschirm hinzufügen".',
   },
   it: {
     mute: 'Muto',
@@ -261,6 +285,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Camera non disponibile — solo audio',
     recordingWarning: '⚠️ {name} potrebbe registrare questa chiamata',
     recordingDetectedSelf: 'Cattura schermo rilevata — l\'altra persona è stata avvisata',
+    confirmEndCall: 'Sei sicuro di voler terminare questa chiamata?',
+    confirmExpireLink: 'Sei sicuro? La chiamata verrà terminata e il link eliminato permanentemente.',
+    cancel: 'Annulla',
+    addToHomeScreen: 'Aggiungi questa app alla schermata iniziale per un accesso rapido.\nSu iPhone usa il pulsante Condividi in Safari; su Android usa il menu del browser e scegli "Aggiungi a schermata Home".',
   },
   pt: {
     mute: 'Mudo',
@@ -302,6 +330,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Câmera não disponível — apenas áudio',
     recordingWarning: '⚠️ {name} pode estar gravando esta chamada',
     recordingDetectedSelf: 'Captura de tela detectada — a outra pessoa foi notificada',
+    confirmEndCall: 'Tem certeza de que deseja encerrar esta chamada?',
+    confirmExpireLink: 'Tem certeza? Isso encerrará a chamada e excluirá o link permanentemente.',
+    cancel: 'Cancelar',
+    addToHomeScreen: 'Adicione este app à tela inicial para acesso rápido.\nNo iPhone use o botão Compartilhar no Safari; no Android use o menu do navegador e escolha "Adicionar à tela inicial".',
   },
   ru: {
     mute: 'Без звука',
@@ -343,6 +375,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Камера недоступна — только аудио',
     recordingWarning: '⚠️ {name} возможно записывает этот звонок',
     recordingDetectedSelf: 'Обнаружена запись экрана — другой участник уведомлён',
+    confirmEndCall: 'Вы уверены, что хотите завершить звонок?',
+    confirmExpireLink: 'Вы уверены? Звонок будет завершён, а ссылка удалена навсегда.',
+    cancel: 'Отмена',
+    addToHomeScreen: 'Добавьте это приложение на главный экран для быстрого доступа.\nНа iPhone используйте кнопку «Поделиться» в Safari; на Android используйте меню браузера и выберите «Добавить на главный экран».',
   },
   zh: {
     mute: '静音',
@@ -384,6 +420,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: '摄像头不可用 — 仅音频',
     recordingWarning: '⚠️ {name} 可能正在录制此通话',
     recordingDetectedSelf: '检测到屏幕录制 — 对方已收到通知',
+    confirmEndCall: '确定要结束此通话吗？',
+    confirmExpireLink: '确定吗？这将结束通话并永久删除链接。',
+    cancel: '取消',
+    addToHomeScreen: '将此应用添加到主屏幕以便快速访问。\n在iPhone上使用Safari的分享按钮；在Android上使用浏览器菜单，然后选择"添加到主屏幕"。',
   },
   ja: {
     mute: 'ミュート',
@@ -425,6 +465,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'カメラが利用できません — 音声のみ',
     recordingWarning: '⚠️ {name}がこの通話を録画している可能性があります',
     recordingDetectedSelf: '画面キャプチャを検出 — 相手に通知されました',
+    confirmEndCall: 'この通話を終了してもよろしいですか？',
+    confirmExpireLink: '本当によろしいですか？通話が終了し、リンクが永久に削除されます。',
+    cancel: 'キャンセル',
+    addToHomeScreen: 'ホーム画面に追加して素早くアクセス。\niPhoneではSafariの共有ボタンを使用；Androidではブラウザメニューから「ホーム画面に追加」を選択。',
   },
   ko: {
     mute: '음소거',
@@ -466,6 +510,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: '카메라를 사용할 수 없습니다 — 오디오만',
     recordingWarning: '⚠️ {name}님이 이 통화를 녹화하고 있을 수 있습니다',
     recordingDetectedSelf: '화면 캐처 감지됨 — 상대방에게 알림이 전송되었습니다',
+    confirmEndCall: '이 통화를 종료하시겠습니까?',
+    confirmExpireLink: '확실합니까? 통화가 종료되고 링크가 영구적으로 삭제됩니다.',
+    cancel: '취소',
+    addToHomeScreen: '홈 화면에 추가하여 빠르게 접근하세요.\niPhone에서는 Safari의 공유 버튼을 사용; Android에서는 브라우저 메뉴에서 "홈 화면에 추가"를 선택.',
   },
   ar: {
     mute: 'كتم',
@@ -507,6 +555,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'الكاميرا غير متاحة — صوت فقط',
     recordingWarning: '⚠️ قد يقوم {name} بتسجيل هذه المكالمة',
     recordingDetectedSelf: 'تم اكتشاف تسجيل الشاشة — تم إخطار الشخص الآخر',
+    confirmEndCall: 'هل أنت متأكد أنك تريد إنهاء هذه المكالمة؟',
+    confirmExpireLink: 'هل أنت متأكد؟ سيتم إنهاء المكالمة وحذف الرابط نهائياً.',
+    cancel: 'إلغاء',
+    addToHomeScreen: 'أضف هذا التطبيق إلى شاشتك الرئيسية للوصول السريع.\nعلى iPhone استخدم زر المشاركة في Safari؛ على Android استخدم قائمة المتصفح ثم اختر "إضافة إلى الشاشة الرئيسية".',
   },
   hi: {
     mute: 'म्यूट',
@@ -548,6 +600,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'कैमरा उपलब्ध नहीं — केवल ऑडियो',
     recordingWarning: '⚠️ {name} इस कॉल को रिकॉर्ड कर सकता है',
     recordingDetectedSelf: 'स्क्रीन कैप्चर का पता चला — दूसरे व्यक्ति को सूचित किया गया',
+    confirmEndCall: 'क्या आप वाकई इस कॉल को समाप्त करना चाहते हैं?',
+    confirmExpireLink: 'क्या आप सुनिश्चित हैं? कॉल समाप्त हो जाएगी और लिंक स्थायी रूप से हटा दिया जाएगा।',
+    cancel: 'रद्द करें',
+    addToHomeScreen: 'त्वरित पहुंच के लिए इस ऐप को होम स्क्रीन पर जोड़ें।\niPhone पर Safari में शेयर बटन का उपयोग करें; Android पर ब्राउज़र मेनू से "होम स्क्रीन पर जोड़ें" चुनें।',
   },
   tr: {
     mute: 'Sessiz',
@@ -589,6 +645,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Kamera kullanılamıyor — yalnızca ses',
     recordingWarning: '⚠️ {name} bu aramayı kaydediyor olabilir',
     recordingDetectedSelf: 'Ekran kaydı algılandı — diğer kişi bilgilendirildi',
+    confirmEndCall: 'Bu aramayı bitirmek istediğinizden emin misiniz?',
+    confirmExpireLink: 'Emin misiniz? Arama sonlandırılacak ve link kalıcı olarak silinecek.',
+    cancel: 'İptal',
+    addToHomeScreen: 'Hızlı erişim için bu uygulamayı ana ekranınıza ekleyin.\niPhone\'da Safari\'deki Paylaş düğmesini kullanın; Android\'de tarayıcı menüsünden "Ana ekrana ekle"yi seçin.',
   },
   uk: {
     mute: 'Без звуку',
@@ -630,6 +690,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Камера недоступна — лише аудіо',
     recordingWarning: '⚠️ {name} можливо записує цей дзвінок',
     recordingDetectedSelf: 'Виявлено запис екрану — іншого учасника повідомлено',
+    confirmEndCall: 'Ви впевнені, що хочете завершити дзвінок?',
+    confirmExpireLink: 'Ви впевнені? Дзвінок буде завершено, а посилання видалено назавжди.',
+    cancel: 'Скасувати',
+    addToHomeScreen: 'Додайте цей додаток на головний екран для швидкого доступу.\nНа iPhone використовуйте кнопку «Поділитися» в Safari; на Android використовуйте меню браузера та оберіть «Додати на головний екран».',
   },
   pl: {
     mute: 'Wycisz',
@@ -671,6 +735,10 @@ const translations: Record<string, Translations> = {
     cameraNotAvailable: 'Kamera niedostępna — tylko dźwięk',
     recordingWarning: '⚠️ {name} może nagrywać tę rozmowę',
     recordingDetectedSelf: 'Wykryto przechwytywanie ekranu — druga osoba została powiadomiona',
+    confirmEndCall: 'Czy na pewno chcesz zakończyć tę rozmowę?',
+    confirmExpireLink: 'Czy jesteś pewien? Rozmowa zostanie zakończona, a link trwale usunięty.',
+    cancel: 'Anuluj',
+    addToHomeScreen: 'Dodaj tę aplikację do ekranu głównego, aby mieć szybki dostęp.\nNa iPhonie użyj przycisku Udostępnij w Safari; na Androidzie użyj menu przeglądarki i wybierz „Dodaj do ekranu głównego".',
   },
 };
 

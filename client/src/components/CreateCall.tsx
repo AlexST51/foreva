@@ -127,6 +127,12 @@ export default function CreateCall() {
         <p className="hint">
           {i18n.noSignupNeeded}
         </p>
+
+        <p className="home-screen-tip">
+          📱 {i18n.addToHomeScreen.split('\n').map((line, i) => (
+            <span key={i}>{i > 0 && <br />}{line}</span>
+          ))}
+        </p>
       </div>
     </div>
   );
