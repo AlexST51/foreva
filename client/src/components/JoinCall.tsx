@@ -107,20 +107,7 @@ export default function JoinCall() {
         )}
 
         <div className="form-group">
-          <label htmlFor="nickname">{i18n.yourNickname}</label>
-          <input
-            id="nickname"
-            type="text"
-            placeholder={i18n.enterYourName}
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            maxLength={30}
-            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="language">{i18n.yourLanguage}</label>
+          <label htmlFor="language">🌐 {i18n.yourLanguage}</label>
           <select
             id="language"
             value={language}
@@ -132,6 +119,19 @@ export default function JoinCall() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="nickname">{i18n.yourNickname}</label>
+          <input
+            id="nickname"
+            type="text"
+            placeholder={i18n.enterYourName}
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            maxLength={30}
+            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+          />
         </div>
 
         {error && <div className="error-message">{error}</div>}

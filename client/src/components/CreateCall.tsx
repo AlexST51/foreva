@@ -87,20 +87,7 @@ export default function CreateCall() {
         <p className="subtitle">{i18n.ephemeralCalls}</p>
 
         <div className="form-group">
-          <label htmlFor="nickname">{i18n.yourNickname}</label>
-          <input
-            id="nickname"
-            type="text"
-            placeholder={i18n.enterYourName}
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            maxLength={30}
-            onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="language">{i18n.yourLanguage}</label>
+          <label htmlFor="language">🌐 {i18n.yourLanguage}</label>
           <select
             id="language"
             value={language}
@@ -112,6 +99,19 @@ export default function CreateCall() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="nickname">{i18n.yourNickname}</label>
+          <input
+            id="nickname"
+            type="text"
+            placeholder={i18n.enterYourName}
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            maxLength={30}
+            onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+          />
         </div>
 
         {error && <div className="error-message">{error}</div>}
