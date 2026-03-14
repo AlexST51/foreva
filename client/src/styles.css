@@ -312,7 +312,7 @@ html, body {
   top: 1rem;
   right: 1rem;
   width: 144px;
-  height: 192px; /* 3:4 portrait aspect ratio, +20% */
+  height: 192px; /* 3:4 portrait aspect ratio */
   border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -322,6 +322,12 @@ html, body {
   touch-action: none;
   user-select: none;
   transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* Landscape PIP: wider than tall (e.g., laptop webcam) */
+.local-video-container.pip-landscape {
+  width: 192px;
+  height: 108px; /* 16:9 landscape */
 }
 
 /* Swapped state: PIP becomes full screen, main becomes PIP */
@@ -654,9 +660,14 @@ html, body {
 
   .local-video-container {
     width: 120px;
-    height: 160px; /* 3:4 portrait, +20% */
+    height: 160px; /* 3:4 portrait */
     top: 0.5rem;
     right: 0.5rem;
+  }
+
+  .local-video-container.pip-landscape {
+    width: 160px;
+    height: 90px; /* 16:9 landscape */
   }
 
   .remote-video-container.swapped {
@@ -717,7 +728,12 @@ html, body {
 
   .local-video-container {
     width: 96px;
-    height: 128px; /* 3:4 portrait, +20% */
+    height: 128px; /* 3:4 portrait */
+  }
+
+  .local-video-container.pip-landscape {
+    width: 128px;
+    height: 72px; /* 16:9 landscape */
   }
 
   .remote-video-container.swapped {

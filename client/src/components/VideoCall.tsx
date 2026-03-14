@@ -16,9 +16,10 @@ interface DraggablePipProps {
   localVideoRef: React.RefObject<HTMLVideoElement | null>;
   isSwapped: boolean;
   onTap: () => void;
+  orientation?: 'portrait' | 'landscape';
 }
 
-function DraggablePip({ localVideoRef, isSwapped, onTap }: DraggablePipProps) {
+function DraggablePip({ localVideoRef, isSwapped, onTap, orientation }: DraggablePipProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const hasMoved = useRef(false);
@@ -134,10 +135,12 @@ function DraggablePip({ localVideoRef, isSwapped, onTap }: DraggablePipProps) {
     }
   }, [isSwapped]);
 
+  const orientationClass = !isSwapped && orientation ? ` pip-${orientation}` : '';
+
   return (
     <div
       ref={containerRef}
-      className={`local-video-container${isSwapped ? ' swapped' : ''}`}
+      className={`local-video-container${isSwapped ? ' swapped' : ''}${orientationClass}`}
     >
       <video
         ref={localVideoRef}
@@ -184,6 +187,7 @@ export default function VideoCall({
   const [recordingWarning, setRecordingWarning] = useState<string | null>(null);
   const [isSwapped, setIsSwapped] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+  const [localOrientation, setLocalOrientation] = useState<'portrait' | 'landscape'>('portrait');
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -212,12 +216,40 @@ export default function VideoCall({
     onRemoteStream,
   });
 
-  // Set local video element source
+  // Set local video element source and detect orientation
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
+      // Detect orientation from video track settings
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (videoTrack) {
+        const settings = videoTrack.getSettings();
+        if (settings.width && settings.height) {
+          setLocalOrientation(settings.height > settings.width ? 'portrait' : 'landscape');
+        }
+      }
     }
   }, [localStream]);
+
+  // Also detect orientation when video metadata loads (more reliable)
+  useEffect(() => {
+    const video = localVideoRef.current;
+    if (!video) return;
+    const handleMetadata = () => {
+      const w = video.videoWidth;
+      const h = video.videoHeight;
+      if (w && h) {
+        setLocalOrientation(h > w ? 'portrait' : 'landscape');
+      }
+    };
+    video.addEventListener('loadedmetadata', handleMetadata);
+    // Also check on resize (orientation change on mobile)
+    video.addEventListener('resize', handleMetadata);
+    return () => {
+      video.removeEventListener('loadedmetadata', handleMetadata);
+      video.removeEventListener('resize', handleMetadata);
+    };
+  }, []);
 
   // Set remote video element source
   useEffect(() => {
@@ -599,6 +631,7 @@ export default function VideoCall({
         localVideoRef={localVideoRef}
         isSwapped={isSwapped}
         onTap={handleSwapVideos}
+        orientation={localOrientation}
       />
 
       {/* Call duration timer */}
