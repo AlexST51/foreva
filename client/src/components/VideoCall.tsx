@@ -182,6 +182,7 @@ export default function VideoCall({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [recordingWarning, setRecordingWarning] = useState<string | null>(null);
   const [isSwapped, setIsSwapped] = useState(false);
+  const [callDuration, setCallDuration] = useState(0);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -412,6 +413,27 @@ export default function VideoCall({
   // Enable detection only when connected
   useScreenCaptureDetection(handleRecordingDetected, status === 'connected');
 
+  // Call duration timer — starts when connected
+  useEffect(() => {
+    if (status !== 'connected') return;
+    setCallDuration(0);
+    const interval = setInterval(() => {
+      setCallDuration((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [status]);
+
+  // Format seconds as HH:MM:SS or MM:SS
+  const formatDuration = (totalSeconds: number) => {
+    const hrs = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return hrs > 0
+      ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}`
+      : `${pad(mins)}:${pad(secs)}`;
+  };
+
   // Toggle swap between PIP and main video
   const handleSwapVideos = useCallback(() => {
     setIsSwapped((prev) => !prev);
@@ -526,6 +548,13 @@ export default function VideoCall({
         isSwapped={isSwapped}
         onTap={handleSwapVideos}
       />
+
+      {/* Call duration timer */}
+      {status === 'connected' && (
+        <div className="call-timer">
+          {formatDuration(callDuration)}
+        </div>
+      )}
 
       {/* Connection status banner */}
       {status === 'connected' && peerName && (

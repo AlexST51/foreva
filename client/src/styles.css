@@ -370,6 +370,25 @@ html, body {
   transform: scaleX(-1);
 }
 
+/* ─── Call Timer ─────────────────────────────────────────────────────────── */
+
+.call-timer {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  color: white;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  z-index: 15;
+  pointer-events: none;
+  letter-spacing: 0.04em;
+}
+
 /* ─── Connection Banner ──────────────────────────────────────────────────── */
 
 .connection-banner {
