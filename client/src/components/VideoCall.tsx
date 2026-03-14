@@ -23,8 +23,18 @@ interface DraggablePipProps {
 function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCamera = true }: DraggablePipProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
-  const hasMoved = useRef(false);
+  const hasDragged = useRef(false); // true only if moved beyond threshold
   const dragOffset = useRef({ x: 0, y: 0 });
+  const startPos = useRef({ x: 0, y: 0 }); // track start position for threshold
+  const onTapRef = useRef(onTap);
+
+  // Keep onTap ref current without re-running the effect
+  useEffect(() => {
+    onTapRef.current = onTap;
+  }, [onTap]);
+
+  // Drag threshold in pixels — movement below this counts as a tap
+  const DRAG_THRESHOLD = 10;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -47,7 +57,8 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
     // --- Mouse events ---
     const onMouseDown = (e: MouseEvent) => {
       isDragging.current = true;
-      hasMoved.current = false;
+      hasDragged.current = false;
+      startPos.current = { x: e.clientX, y: e.clientY };
       el.classList.add('dragging');
       const rect = el.getBoundingClientRect();
       dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -56,7 +67,10 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
-      hasMoved.current = true;
+      const dx = e.clientX - startPos.current.x;
+      const dy = e.clientY - startPos.current.y;
+      if (!hasDragged.current && Math.sqrt(dx * dx + dy * dy) < DRAG_THRESHOLD) return;
+      hasDragged.current = true;
       const pos = clampPosition(
         e.clientX - dragOffset.current.x,
         e.clientY - dragOffset.current.y
@@ -67,8 +81,8 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
     };
 
     const onMouseUp = () => {
-      if (isDragging.current && !hasMoved.current) {
-        onTap();
+      if (isDragging.current && !hasDragged.current) {
+        onTapRef.current();
       }
       isDragging.current = false;
       el.classList.remove('dragging');
@@ -78,17 +92,21 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       isDragging.current = true;
-      hasMoved.current = false;
-      el.classList.add('dragging');
+      hasDragged.current = false;
       const touch = e.touches[0];
+      startPos.current = { x: touch.clientX, y: touch.clientY };
+      el.classList.add('dragging');
       const rect = el.getBoundingClientRect();
       dragOffset.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (!isDragging.current || e.touches.length !== 1) return;
-      hasMoved.current = true;
       const touch = e.touches[0];
+      const dx = touch.clientX - startPos.current.x;
+      const dy = touch.clientY - startPos.current.y;
+      if (!hasDragged.current && Math.sqrt(dx * dx + dy * dy) < DRAG_THRESHOLD) return;
+      hasDragged.current = true;
       const pos = clampPosition(
         touch.clientX - dragOffset.current.x,
         touch.clientY - dragOffset.current.y
@@ -100,8 +118,8 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
     };
 
     const onTouchEnd = () => {
-      if (isDragging.current && !hasMoved.current) {
-        onTap();
+      if (isDragging.current && !hasDragged.current) {
+        onTapRef.current();
       }
       isDragging.current = false;
       el.classList.remove('dragging');
@@ -123,7 +141,7 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCam
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
     };
-  }, [isSwapped, onTap]);
+  }, [isSwapped]); // Removed onTap from deps — using onTapRef instead
 
   // Reset position when swapping back to PIP mode
   useEffect(() => {
