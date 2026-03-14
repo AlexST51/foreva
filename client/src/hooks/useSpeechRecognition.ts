@@ -54,6 +54,7 @@ export function useSpeechRecognition(language: string) {
   const [isSupported] = useState(() => !!getSpeechRecognition());
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const onFinalRef = useRef<((text: string) => void) | null>(null);
+  const shouldBeListeningRef = useRef(false); // Track user intent vs browser auto-stop
 
   // Clean up on unmount
   useEffect(() => {
@@ -111,28 +112,45 @@ export function useSpeechRecognition(language: string) {
 
     recognition.onerror = (event) => {
       console.warn('[SpeechRecognition] Error:', event.error);
-      // Don't stop on 'no-speech' — just keep listening
-      if (event.error !== 'no-speech') {
+      // Don't stop on 'no-speech' or 'aborted' — just keep listening
+      if (event.error !== 'no-speech' && event.error !== 'aborted') {
+        // Fatal errors: 'not-allowed', 'service-not-allowed', 'network', etc.
+        shouldBeListeningRef.current = false;
         setIsListening(false);
         setInterimText('');
       }
     };
 
     recognition.onend = () => {
+      // Browser may auto-stop speech recognition (e.g., after silence, or on mobile
+      // when switching apps). If the user didn't explicitly stop, auto-restart.
+      if (shouldBeListeningRef.current) {
+        console.log('[SpeechRecognition] Auto-restarting after browser ended session');
+        try {
+          recognition.start();
+          return; // Don't update state — we're restarting
+        } catch (err) {
+          console.warn('[SpeechRecognition] Auto-restart failed:', err);
+        }
+      }
       setIsListening(false);
       setInterimText('');
       recognitionRef.current = null;
+      shouldBeListeningRef.current = false;
     };
 
+    shouldBeListeningRef.current = true;
     try {
       recognition.start();
     } catch (err) {
       console.warn('[SpeechRecognition] Failed to start:', err);
       setIsListening(false);
+      shouldBeListeningRef.current = false;
     }
   }, [language]);
 
   const stopListening = useCallback(() => {
+    shouldBeListeningRef.current = false; // User explicitly stopped
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch { /* ignore */ }
     }
