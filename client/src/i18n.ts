@@ -71,6 +71,7 @@ export interface Translations {
   // Background blur
   blurOn: string;
   blurOff: string;
+  flipCamera: string;
 }
 
 const translations: Record<string, Translations> = {
@@ -123,6 +124,7 @@ const translations: Record<string, Translations> = {
     listening: 'Listening…',
     blurOn: 'Blur',
     blurOff: 'No blur',
+    flipCamera: 'Flip',
   },
   es: {
     mute: 'Silenciar',
@@ -173,6 +175,7 @@ const translations: Record<string, Translations> = {
     listening: 'Escuchando…',
     blurOn: 'Difuminar',
     blurOff: 'Sin difum.',
+    flipCamera: 'Girar',
   },
   fr: {
     mute: 'Muet',
@@ -223,6 +226,7 @@ const translations: Record<string, Translations> = {
     listening: 'Écoute en cours…',
     blurOn: 'Flou',
     blurOff: 'Net',
+    flipCamera: 'Inverser',
   },
   de: {
     mute: 'Stumm',
@@ -273,6 +277,7 @@ const translations: Record<string, Translations> = {
     listening: 'Hört zu…',
     blurOn: 'Unscharf',
     blurOff: 'Scharf',
+    flipCamera: 'Drehen',
   },
   it: {
     mute: 'Muto',
@@ -323,6 +328,7 @@ const translations: Record<string, Translations> = {
     listening: 'In ascolto…',
     blurOn: 'Sfocato',
     blurOff: 'Nitido',
+    flipCamera: 'Inverti',
   },
   pt: {
     mute: 'Mudo',
@@ -373,6 +379,7 @@ const translations: Record<string, Translations> = {
     listening: 'Ouvindo…',
     blurOn: 'Desfocar',
     blurOff: 'Nítido',
+    flipCamera: 'Inverter',
   },
   ru: {
     mute: 'Без звука',
@@ -423,6 +430,7 @@ const translations: Record<string, Translations> = {
     listening: 'Слушаю…',
     blurOn: 'Размытие',
     blurOff: 'Без разм.',
+    flipCamera: 'Развернуть',
   },
   zh: {
     mute: '静音',
@@ -473,6 +481,7 @@ const translations: Record<string, Translations> = {
     listening: '正在收听…',
     blurOn: '模糊',
     blurOff: '清晰',
+    flipCamera: '翻转',
   },
   ja: {
     mute: 'ミュート',
@@ -523,6 +532,7 @@ const translations: Record<string, Translations> = {
     listening: '聞き取り中…',
     blurOn: 'ぼかし',
     blurOff: 'クリア',
+    flipCamera: '反転',
   },
   ko: {
     mute: '음소거',
@@ -573,6 +583,7 @@ const translations: Record<string, Translations> = {
     listening: '듣는 중…',
     blurOn: '흐림',
     blurOff: '선명',
+    flipCamera: '전환',
   },
   ar: {
     mute: 'كتم',
@@ -623,6 +634,7 @@ const translations: Record<string, Translations> = {
     listening: 'جاري الاستماع…',
     blurOn: 'ضبابي',
     blurOff: 'واضح',
+    flipCamera: 'قلب',
   },
   hi: {
     mute: 'म्यूट',
@@ -673,6 +685,7 @@ const translations: Record<string, Translations> = {
     listening: 'सुन रहा है…',
     blurOn: 'धुंधला',
     blurOff: 'स्पष्ट',
+    flipCamera: 'पलटें',
   },
   tr: {
     mute: 'Sessiz',
@@ -723,6 +736,7 @@ const translations: Record<string, Translations> = {
     listening: 'Dinliyor…',
     blurOn: 'Bulanık',
     blurOff: 'Net',
+    flipCamera: 'Çevir',
   },
   uk: {
     mute: 'Без звуку',
@@ -773,6 +787,7 @@ const translations: Record<string, Translations> = {
     listening: 'Слухаю…',
     blurOn: 'Розмиття',
     blurOff: 'Чітко',
+    flipCamera: 'Перевернути',
   },
   pl: {
     mute: 'Wycisz',
@@ -823,6 +838,7 @@ const translations: Record<string, Translations> = {
     listening: 'Słucham…',
     blurOn: 'Rozmycie',
     blurOff: 'Ostro',
+    flipCamera: 'Obróć',
   },
 };
 

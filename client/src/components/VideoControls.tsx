@@ -7,9 +7,11 @@ interface VideoControlsProps {
   isCreator: boolean;
   isBlurEnabled: boolean;
   isBlurLoading: boolean;
+  isFrontCamera: boolean;
   onToggleMute: () => void;
   onToggleCamera: () => void;
   onToggleBlur: () => void;
+  onFlipCamera: () => void;
   onEndCall: () => void;
   onEndAndExpire: () => void;
   i18n: Translations;
@@ -21,9 +23,11 @@ export default function VideoControls({
   isCreator,
   isBlurEnabled,
   isBlurLoading,
+  isFrontCamera,
   onToggleMute,
   onToggleCamera,
   onToggleBlur,
+  onFlipCamera,
   onEndCall,
   onEndAndExpire,
   i18n,
@@ -67,6 +71,14 @@ export default function VideoControls({
           title={isBlurEnabled ? i18n.blurOff : i18n.blurOn}
         >
           {isBlurLoading ? '⏳' : isBlurEnabled ? i18n.blurOff : i18n.blurOn}
+        </button>
+
+        <button
+          className="control-btn"
+          onClick={onFlipCamera}
+          title={i18n.flipCamera}
+        >
+          🔄 {i18n.flipCamera}
         </button>
 
         <button

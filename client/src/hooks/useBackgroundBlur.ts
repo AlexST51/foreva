@@ -18,6 +18,7 @@ export function useBackgroundBlur() {
   const blurStreamRef = useRef<MediaStream | null>(null);
   const rawStreamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
+  const isBlurEnabledRef = useRef(false);
 
   /**
    * Initialize the segmentation model (lazy-loaded on first use).
@@ -92,15 +93,16 @@ export function useBackgroundBlur() {
 
   /**
    * Process frames in a loop.
+   * Uses isBlurEnabledRef to avoid stale closure issues.
    */
   const processFrame = useCallback(async () => {
+    if (!isBlurEnabledRef.current) return; // Stop loop if blur was disabled
+
     const video = videoElRef.current;
     const segmentation = segmentationRef.current;
 
     if (!video || !segmentation || video.paused || video.ended) {
-      if (isBlurEnabled) {
-        animFrameRef.current = requestAnimationFrame(processFrame);
-      }
+      animFrameRef.current = requestAnimationFrame(processFrame);
       return;
     }
 
@@ -114,7 +116,7 @@ export function useBackgroundBlur() {
     }
 
     animFrameRef.current = requestAnimationFrame(processFrame);
-  }, [isBlurEnabled]);
+  }, []);
 
   /**
    * Enable background blur on a given raw camera stream.
@@ -152,6 +154,7 @@ export function useBackgroundBlur() {
     });
 
     blurStreamRef.current = canvasStream;
+    isBlurEnabledRef.current = true;
     setIsBlurEnabled(true);
 
     // Start processing loop
@@ -177,6 +180,7 @@ export function useBackgroundBlur() {
       videoElRef.current = null;
     }
 
+    isBlurEnabledRef.current = false;
     setIsBlurEnabled(false);
     blurStreamRef.current = null;
 

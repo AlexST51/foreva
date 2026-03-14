@@ -17,9 +17,10 @@ interface DraggablePipProps {
   isSwapped: boolean;
   onTap: () => void;
   orientation?: 'portrait' | 'landscape';
+  isFrontCamera?: boolean;
 }
 
-function DraggablePip({ localVideoRef, isSwapped, onTap, orientation }: DraggablePipProps) {
+function DraggablePip({ localVideoRef, isSwapped, onTap, orientation, isFrontCamera = true }: DraggablePipProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const hasMoved = useRef(false);
@@ -148,6 +149,7 @@ function DraggablePip({ localVideoRef, isSwapped, onTap, orientation }: Draggabl
         playsInline
         muted
         className="local-video"
+        style={!isFrontCamera ? { transform: 'none' } : undefined}
       />
     </div>
   );
@@ -192,7 +194,7 @@ export default function VideoCall({
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
 
-  const { localStream, isMuted, isCameraOff, error: mediaError, startMedia, stopMedia, toggleMute, toggleCamera } = useMediaDevices();
+  const { localStream, isMuted, isCameraOff, isFrontCamera, error: mediaError, startMedia, stopMedia, toggleMute, toggleCamera, flipCamera } = useMediaDevices();
   const { connect, disconnect, send, addMessageHandler, wsRef } = useWebSocket();
   const { isBlurEnabled, isLoading: isBlurLoading, enableBlur, disableBlur, cleanup: cleanupBlur } = useBackgroundBlur();
 
@@ -461,6 +463,36 @@ export default function VideoCall({
     }
   }, [isBlurEnabled, enableBlur, disableBlur, replaceVideoTrackInPC]);
 
+  // Handle camera flip (front/rear)
+  const handleFlipCamera = useCallback(async () => {
+    // If blur is active, disable it first (new stream needs new blur setup)
+    if (isBlurEnabled) {
+      disableBlur();
+    }
+    const newStream = await flipCamera();
+    if (newStream) {
+      localStreamRef.current = newStream;
+      rawStreamRef.current = null; // Reset raw stream ref
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = newStream;
+      }
+      replaceVideoTrackInPC(newStream);
+      // Also replace audio track
+      const pc = pcRef.current;
+      if (pc) {
+        const newAudioTrack = newStream.getAudioTracks()[0];
+        if (newAudioTrack) {
+          const audioSender = pc.getSenders().find((s) => s.track?.kind === 'audio');
+          if (audioSender) {
+            audioSender.replaceTrack(newAudioTrack).catch((err) => {
+              console.warn('[FlipCamera] Failed to replace audio track:', err);
+            });
+          }
+        }
+      }
+    }
+  }, [isBlurEnabled, disableBlur, flipCamera, replaceVideoTrackInPC, pcRef]);
+
   // Handle end call
   const handleEndCall = useCallback(() => {
     if (roomId) {
@@ -632,6 +664,7 @@ export default function VideoCall({
         isSwapped={isSwapped}
         onTap={handleSwapVideos}
         orientation={localOrientation}
+        isFrontCamera={isFrontCamera}
       />
 
       {/* Call duration timer */}
@@ -678,9 +711,11 @@ export default function VideoCall({
         isCreator={role === 'creator'}
         isBlurEnabled={isBlurEnabled}
         isBlurLoading={isBlurLoading}
+        isFrontCamera={isFrontCamera}
         onToggleMute={toggleMute}
         onToggleCamera={toggleCamera}
         onToggleBlur={handleToggleBlur}
+        onFlipCamera={handleFlipCamera}
         onEndCall={handleEndCall}
         onEndAndExpire={handleEndAndExpire}
         i18n={i18n}

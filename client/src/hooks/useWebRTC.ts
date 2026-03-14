@@ -46,6 +46,7 @@ export function useWebRTC({ roomId, send, onRemoteStream }: UseWebRTCOptions) {
   const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>('new');
   const iceRestartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
+  const isNegotiating = useRef(false);
 
   /**
    * Attempt an ICE restart to recover a failed/disconnected connection.
@@ -172,8 +173,15 @@ export function useWebRTC({ roomId, send, onRemoteStream }: UseWebRTCOptions) {
       };
 
       // Handle negotiation needed (e.g., after track changes)
+      // Guard against renegotiation loops — replaceTrack() should NOT trigger this,
+      // but some browsers fire it anyway.
       pc.onnegotiationneeded = async () => {
+        if (isNegotiating.current) {
+          console.log('[WebRTC] Negotiation already in progress, skipping');
+          return;
+        }
         console.log('[WebRTC] Negotiation needed');
+        isNegotiating.current = true;
         try {
           if (pc.signalingState === 'stable') {
             const offer = await pc.createOffer();
@@ -186,6 +194,8 @@ export function useWebRTC({ roomId, send, onRemoteStream }: UseWebRTCOptions) {
           }
         } catch (err) {
           console.warn('[WebRTC] Renegotiation failed:', err);
+        } finally {
+          isNegotiating.current = false;
         }
       };
 

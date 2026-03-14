@@ -8,6 +8,7 @@ export function useMediaDevices() {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
+  const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -116,14 +117,47 @@ export function useMediaDevices() {
     }
   }, []);
 
+  /**
+   * Flip between front and rear camera.
+   * Returns the new stream so the caller can update WebRTC tracks.
+   */
+  const flipCamera = useCallback(async (): Promise<MediaStream | null> => {
+    try {
+      const newFacing = isFrontCamera ? 'environment' : 'user';
+
+      // Get new video stream with the other camera
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newFacing, width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: true,
+      });
+
+      // Stop old tracks
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
+      streamRef.current = newStream;
+      setLocalStream(newStream);
+      setIsFrontCamera(!isFrontCamera);
+      setIsCameraOff(false);
+      return newStream;
+    } catch (err) {
+      console.warn('[Media] Failed to flip camera:', err);
+      setError('Could not switch camera');
+      return null;
+    }
+  }, [isFrontCamera]);
+
   return {
     localStream,
     isMuted,
     isCameraOff,
+    isFrontCamera,
     error,
     startMedia,
     stopMedia,
     toggleMute,
     toggleCamera,
+    flipCamera,
   };
 }
