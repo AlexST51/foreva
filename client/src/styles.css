@@ -311,8 +311,8 @@ html, body {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 120px;
-  height: 160px; /* 3:4 portrait aspect ratio */
+  width: 144px;
+  height: 192px; /* 3:4 portrait aspect ratio, +20% */
   border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -321,6 +321,41 @@ html, body {
   cursor: grab;
   touch-action: none;
   user-select: none;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* Swapped state: PIP becomes full screen, main becomes PIP */
+.local-video-container.swapped {
+  position: absolute;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0;
+  border: none;
+  z-index: 5;
+  cursor: default;
+}
+
+.remote-video-container.swapped {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 144px;
+  height: 192px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #111;
+  z-index: 10;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.remote-video-container.swapped .remote-video {
+  object-fit: cover;
 }
 
 .local-video-container.dragging {
@@ -511,7 +546,7 @@ html, body {
   max-width: 90%;
   padding: 0.2rem 0;
   border-radius: 0;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   background: transparent;
 }
 
@@ -530,7 +565,7 @@ html, body {
 }
 
 .chat-sender {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: 0.1rem;
@@ -548,7 +583,7 @@ html, body {
 }
 
 .chat-secondary {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   margin-top: 0.15rem;
   line-height: 1.3;
@@ -599,10 +634,15 @@ html, body {
   }
 
   .local-video-container {
-    width: 100px;
-    height: 133px; /* 3:4 portrait */
+    width: 120px;
+    height: 160px; /* 3:4 portrait, +20% */
     top: 0.5rem;
     right: 0.5rem;
+  }
+
+  .remote-video-container.swapped {
+    width: 120px;
+    height: 160px;
   }
 
   .chat-overlay {
@@ -657,8 +697,13 @@ html, body {
   }
 
   .local-video-container {
-    width: 80px;
-    height: 107px; /* 3:4 portrait */
+    width: 96px;
+    height: 128px; /* 3:4 portrait, +20% */
+  }
+
+  .remote-video-container.swapped {
+    width: 96px;
+    height: 128px;
   }
 
   .chat-overlay {
@@ -707,5 +752,61 @@ html, body {
 
   .link-row {
     gap: 0.35rem;
+  }
+}
+
+/* ─── Landscape Mode (mobile) ────────────────────────────────────────────── */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .call-container {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .local-video-container {
+    width: 120px;
+    height: 90px; /* 4:3 landscape in landscape mode */
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .remote-video-container.swapped {
+    width: 120px;
+    height: 90px;
+  }
+
+  .video-controls {
+    bottom: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    gap: 0.35rem;
+  }
+
+  .control-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.6rem;
+  }
+
+  .chat-overlay {
+    bottom: 3.5rem;
+    max-height: 120px;
+  }
+
+  .connection-banner {
+    top: 0.35rem;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .card {
+    padding: 1rem 1rem;
+    max-width: 90%;
+  }
+
+  .card h1 {
+    font-size: 1.2rem;
+  }
+
+  .page {
+    padding: 0.5rem;
   }
 }

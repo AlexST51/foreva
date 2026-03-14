@@ -13,16 +13,22 @@ import Logo from './Logo';
 
 interface DraggablePipProps {
   localVideoRef: React.RefObject<HTMLVideoElement | null>;
+  isSwapped: boolean;
+  onTap: () => void;
 }
 
-function DraggablePip({ localVideoRef }: DraggablePipProps) {
+function DraggablePip({ localVideoRef, isSwapped, onTap }: DraggablePipProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
+  const hasMoved = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    // Don't enable drag when swapped (full screen)
+    if (isSwapped) return;
 
     const clampPosition = (x: number, y: number) => {
       const parentW = window.innerWidth;
@@ -38,6 +44,7 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
     // --- Mouse events ---
     const onMouseDown = (e: MouseEvent) => {
       isDragging.current = true;
+      hasMoved.current = false;
       el.classList.add('dragging');
       const rect = el.getBoundingClientRect();
       dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -46,6 +53,7 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
+      hasMoved.current = true;
       const pos = clampPosition(
         e.clientX - dragOffset.current.x,
         e.clientY - dragOffset.current.y
@@ -56,6 +64,9 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
     };
 
     const onMouseUp = () => {
+      if (isDragging.current && !hasMoved.current) {
+        onTap();
+      }
       isDragging.current = false;
       el.classList.remove('dragging');
     };
@@ -64,6 +75,7 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       isDragging.current = true;
+      hasMoved.current = false;
       el.classList.add('dragging');
       const touch = e.touches[0];
       const rect = el.getBoundingClientRect();
@@ -72,6 +84,7 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
 
     const onTouchMove = (e: TouchEvent) => {
       if (!isDragging.current || e.touches.length !== 1) return;
+      hasMoved.current = true;
       const touch = e.touches[0];
       const pos = clampPosition(
         touch.clientX - dragOffset.current.x,
@@ -84,6 +97,9 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
     };
 
     const onTouchEnd = () => {
+      if (isDragging.current && !hasMoved.current) {
+        onTap();
+      }
       isDragging.current = false;
       el.classList.remove('dragging');
     };
@@ -104,10 +120,24 @@ function DraggablePip({ localVideoRef }: DraggablePipProps) {
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
     };
-  }, []);
+  }, [isSwapped, onTap]);
+
+  // Reset position when swapping back to PIP mode
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (!isSwapped) {
+      el.style.left = '';
+      el.style.top = '';
+      el.style.right = '';
+    }
+  }, [isSwapped]);
 
   return (
-    <div ref={containerRef} className="local-video-container">
+    <div
+      ref={containerRef}
+      className={`local-video-container${isSwapped ? ' swapped' : ''}`}
+    >
       <video
         ref={localVideoRef}
         autoPlay
@@ -151,6 +181,7 @@ export default function VideoCall({
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [recordingWarning, setRecordingWarning] = useState<string | null>(null);
+  const [isSwapped, setIsSwapped] = useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -381,6 +412,11 @@ export default function VideoCall({
   // Enable detection only when connected
   useScreenCaptureDetection(handleRecordingDetected, status === 'connected');
 
+  // Toggle swap between PIP and main video
+  const handleSwapVideos = useCallback(() => {
+    setIsSwapped((prev) => !prev);
+  }, []);
+
   // Handle send chat message
   const handleSendMessage = useCallback(
     (text: string) => {
@@ -435,8 +471,11 @@ export default function VideoCall({
 
   return (
     <div className="call-container">
-      {/* Remote video (large) */}
-      <div className="remote-video-container">
+      {/* Remote video (large, or PIP when swapped) */}
+      <div
+        className={`remote-video-container${isSwapped ? ' swapped' : ''}`}
+        onClick={isSwapped ? handleSwapVideos : undefined}
+      >
         {remoteStream ? (
           <video
             ref={remoteVideoRef}
@@ -481,8 +520,12 @@ export default function VideoCall({
         )}
       </div>
 
-      {/* Local video (small, corner, draggable) */}
-      <DraggablePip localVideoRef={localVideoRef} />
+      {/* Local video (small, corner, draggable — tap to swap) */}
+      <DraggablePip
+        localVideoRef={localVideoRef}
+        isSwapped={isSwapped}
+        onTap={handleSwapVideos}
+      />
 
       {/* Connection status banner */}
       {status === 'connected' && peerName && (
