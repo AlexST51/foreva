@@ -1,0 +1,77 @@
+# .clinerules/model-policy.yaml
+
+model_policy:
+  default_model:
+    provider: google
+    model: gemini-3.1-flash-lite-preview
+    intent: "Use for most low/medium-impact day-to-day tasks: Q&A, small edits, docs, light refactors."
+  free_tier_preference:
+    - provider: kat
+      model: kat-coder-pro-v1-free
+      use_for:
+        - "boilerplate and trivial code generation"
+        - "simple single-file bugfixes with clear errors"
+        - "experimentation and toy examples"
+    - provider: arcee
+      model: trinity-large-preview-free
+      use_for:
+        - "general chat and documentation"
+        - "idea exploration and non-critical analysis"
+  mid_tier_models:
+    - provider: openai
+      model: gpt-5.3-codex
+      allowed_for:
+        - "single-file and small cross-file refactors"
+        - "CI/CD, infra and deployment config"
+        - "large-context analysis that does not require frontier models"
+    - provider: google
+      model: gemini-3.1-pro-preview
+      allowed_for:
+        - "spreadsheet-style and data-heavy workflows"
+        - "multimodal or long-context reasoning where Flash Lite is not enough"
+  premium_models:
+    - provider: anthropic
+      model: sonnet-4.6
+      allowed_for:
+        - "initial build of new services or major multi-file features"
+        - "architecture and system design"
+        - "large multi-file refactors and complex debugging"
+    - provider: openai
+      model: gpt-5.4
+      allowed_for:
+        - "frontier general reasoning and huge-context synthesis"
+        - "multimodal tasks that need GPT-5.4 specifically"
+  extreme_premium_models:
+    - provider: anthropic
+      model: opus-4.6
+      allowed_for:
+        - "only the most complex, long-running, high-risk coding workflows"
+        - "mission-critical refactors or migrations where failure is very costly"
+      note: "Do NOT use Opus 4.6 by default. Propose it only with an explicit cost/benefit justification and wait for my approval."
+
+rules:
+  - description: "Minimise spend by default."
+    instructions:
+      - "Start with free models (Trinity, KAT) or Gemini Flash Lite whenever the task is low/medium impact."
+      - "Only propose mid-tier or premium models when simpler options clearly struggle or the task is high-impact."
+  - description: "Opus 4.6 is opt-in only."
+    instructions:
+      - "Never switch to Opus 4.6 automatically."
+      - "If you believe Opus 4.6 is warranted, explain why in terms of complexity, risk, and expected token usage, and ask for explicit approval first."
+  - description: "Initial builds and big refactors."
+    instructions:
+      - "For first-time builds of substantial features or services, propose Sonnet 4.6 (or GPT-5.3-Codex if I prefer OpenAI)."
+      - "Show a brief plan and estimated cost before executing large multi-file changes."
+  - description: "Respect explicit model choices."
+    instructions:
+      - "If I name a specific model or provider, use that even if it conflicts with these rules, unless I explicitly say 'choose for me'."
+
+safety_and_audit:
+  logging:
+    note: "When suggesting Sonnet 4.6, GPT-5.4, Gemini 3.1 Pro or Opus 4.6, include a one-line justification mentioning impact and approximate token cost."
+  confirmation:
+    required_for:
+      - "multi-file refactors"
+      - "CI/CD or infra changes"
+      - "any operation using Opus 4.6"
+    message: "Summarise what will change, which model will be used and why it is worth the extra cost before executing."

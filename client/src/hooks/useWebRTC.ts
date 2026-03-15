@@ -8,29 +8,29 @@ const ICE_CONFIG: RTCConfiguration = {
     // Google STUN servers
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    // Metered STUN
-    { urls: 'stun:stun.relay.metered.ca:80' },
-    // Metered TURN servers (static credential)
-    {
-      urls: 'turn:global.relay.metered.ca:80',
-      username: '191a9d987f189a53cf4f1ed9',
-      credential: 'gltGSb5xFw4BBP/f',
-    },
-    {
-      urls: 'turn:global.relay.metered.ca:80?transport=tcp',
-      username: '191a9d987f189a53cf4f1ed9',
-      credential: 'gltGSb5xFw4BBP/f',
-    },
-    {
-      urls: 'turn:global.relay.metered.ca:443',
-      username: '191a9d987f189a53cf4f1ed9',
-      credential: 'gltGSb5xFw4BBP/f',
-    },
-    {
-      urls: 'turns:global.relay.metered.ca:443?transport=tcp',
-      username: '191a9d987f189a53cf4f1ed9',
-      credential: 'gltGSb5xFw4BBP/f',
-    },
+    // // Metered STUN
+    // { urls: 'stun:stun.relay.metered.ca:80' },
+    // // Metered TURN servers (static credential)
+    // {
+    //   urls: 'turn:global.relay.metered.ca:80',
+    //   username: '191a9d987f189a53cf4f1ed9',
+    //   credential: 'gltGSb5xFw4BBP/f',
+    // },
+    // {
+    //   urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+    //   username: '191a9d987f189a53cf4f1ed9',
+    //   credential: 'gltGSb5xFw4BBP/f',
+    // },
+    // {
+    //   urls: 'turn:global.relay.metered.ca:443',
+    //   username: '191a9d987f189a53cf4f1ed9',
+    //   credential: 'gltGSb5xFw4BBP/f',
+    // },
+    // {
+    //   urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+    //   username: '191a9d987f189a53cf4f1ed9',
+    //   credential: 'gltGSb5xFw4BBP/f',
+    // },
   ],
   iceCandidatePoolSize: 10,
 };

@@ -268,6 +268,61 @@ Single WebSocket endpoint at `ws://host:port`. Message types:
 - [ ] End-to-end encryption for chat messages
 - [ ] Mobile app (React Native)
 
+## 🤖 AI Assistant / Cline Model Policy
+
+This project uses **Cline** in VS Code with a cost‑controlled, bring‑your‑own‑key setup.
+
+### Default behaviour
+
+- Use **Gemini 3.1 Flash Lite Preview** as the main default:
+  - Q&A and explanations about code
+  - Small edits and single‑file tweaks
+  - Documentation, migration notes, and simple text transforms
+- Prefer **free models** for trivial work:
+  - **KAT‑Coder‑Pro V1 (free)** for boilerplate, simple refactors, and low‑risk bugfixes
+  - **Trinity‑Large‑Preview (free)** for general chat, docs, and experimentation
+
+### When to use stronger models
+
+- Use **Sonnet 4.6** (Anthropic) for:
+  - Initial build of new services or major multi‑file features
+  - Architecture and system design
+  - Large multi‑file refactors and complex debugging over time
+- Use **GPT‑5.3‑Codex** (OpenAI) for:
+  - Serious coding sessions on medium‑to‑large features
+  - Cross‑file refactors and CI/CD or infra changes
+  - Long‑context code analysis where cost still matters
+- Use **GPT‑5.4** or **Gemini 3.1 Pro** when:
+  - You need frontier‑level general reasoning, huge context, or multimodal analysis (code + docs + images)
+
+### Opus 4.6 usage
+
+- **Opus 4.6 is not a default model.** It is reserved for:
+  - Only the most complex, long‑running, high‑risk workflows
+  - Mission‑critical refactors or migrations where failure is very costly
+- Cline should **never** switch to Opus 4.6 automatically.
+  - It must first propose a plan, explain why Opus is worth the extra cost, and wait for explicit approval.
+
+### Cost and safety guidelines
+
+- Cost tiers (per 1M tokens, approximate):
+  - Free: KAT‑Coder‑Pro, Trinity‑Large‑Preview
+  - Very cheap: Gemini 3.1 Flash Lite
+  - Mid‑tier: GPT‑5.3‑Codex, Gemini 3.1 Pro
+  - Premium: Sonnet 4.6, GPT‑5.4
+  - Extreme premium: Opus 4.6
+- Default rule:
+  - Start with **free or Flash Lite** for low/medium‑impact work.
+  - Escalate to Codex / Sonnet / GPT‑5.4 / Gemini Pro only when cheaper models struggle or the task is clearly high‑impact.
+- For multi‑file edits, CI/CD, or mass changes:
+  - Cline should show a plan first
+  - Changes should only proceed after explicit confirmation
+
+### Configuration files
+
+- **`.clinerules/model-policy.yaml`** – Machine‑readable policy with tiers, rules, and safety/audit settings
+- **`.clinerules/cline-model-usage.json`** – Detailed cheat sheet mapping task categories to recommended models with fallbacks and cost tiers
+
 ## 📄 License
 
 MIT

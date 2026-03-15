@@ -99,6 +99,13 @@ export function useBackgroundBlur() {
     if (!isBlurEnabledRef.current) return; // Stop loop if blur was disabled
 
     const video = videoElRef.current;
+    
+    // Safety check for mobile browsers that might need more time or have different video state
+    if (video && video.readyState < 2) {
+      animFrameRef.current = requestAnimationFrame(processFrame);
+      return;
+    }
+
     const segmentation = segmentationRef.current;
 
     if (!video || !segmentation || video.paused || video.ended) {

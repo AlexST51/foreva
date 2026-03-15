@@ -1,0 +1,233 @@
+{
+  "meta": {
+    "description": "Personal cheat sheet for which model to use with Cline for different coding tasks, based on current OpenRouter prices.",
+    "author": "Your Name",
+    "created_at": "2026-03-15",
+    "notes": "Models assume Anthropic 4.6 series, OpenAI GPT-5.3 Codex / GPT-5.4, Google Gemini 3.1 Flash Lite/Pro, KAT-Coder-Pro V1 (free tier) and Trinity-Large-Preview (free)."
+  },
+  "providers": {
+    "anthropic": {
+      "strong_default": "sonnet-4.6",
+      "frontier": "opus-4.6"
+    },
+    "openai": {
+      "coding": "gpt-5.3-codex",
+      "frontier_general": "gpt-5.4"
+    },
+    "google": {
+      "cheap_general": "gemini-3.1-flash-lite-preview",
+      "reasoning": "gemini-3.1-pro-preview"
+    },
+    "kat": {
+      "free_coder": "kat-coder-pro-v1-free"
+    },
+    "arcee": {
+      "free_general": "trinity-large-preview-free"
+    }
+  },
+  "usage_rules": [
+    {
+      "task_category": "initial_build",
+      "examples": [
+        "Scaffold a brand new service or application",
+        "Initial build of a new feature that creates multiple files",
+        "Setting up routing, basic data models and initial API endpoints"
+      ],
+      "recommended_model": "sonnet-4.6",
+      "provider": "anthropic",
+      "fallback_model": "gpt-5.3-codex",
+      "fallback_provider": "openai",
+      "why": "Sonnet 4.6 is strong enough for architecture+implementation at lower cost than Opus; Codex is a solid alternative with long context.",
+      "cost_focus": "Medium",
+      "notes": "Reserve Opus 4.6 for especially complex or high-risk greenfield builds."
+    },
+    {
+      "task_category": "quick_qa_and_snippets",
+      "examples": [
+        "Ask how a specific library function works",
+        "Explain an error message",
+        "Generate a small code snippet or helper function"
+      ],
+      "recommended_model": "gemini-3.1-flash-lite-preview",
+      "provider": "google",
+      "fallback_model": "kat-coder-pro-v1-free",
+      "fallback_provider": "kat",
+      "why": "Flash Lite is extremely cheap and good for Q&A; KAT free tier is fine when latency is acceptable.",
+      "cost_focus": "Very Low"
+    },
+    {
+      "task_category": "trivial_boilerplate_and_simple_edits",
+      "examples": [
+        "Generate boilerplate for a basic component or class",
+        "Rename functions or variables within one file",
+        "Add simple logging statements"
+      ],
+      "recommended_model": "kat-coder-pro-v1-free",
+      "provider": "kat",
+      "fallback_model": "trinity-large-preview-free",
+      "fallback_provider": "arcee",
+      "why": "Use free coder/general models for low-risk work to avoid API cost entirely.",
+      "cost_focus": "Free (API)"
+    },
+    {
+      "task_category": "simple_bugfix_single_file",
+      "examples": [
+        "Fix a bug with a clear stack trace in one file",
+        "Resolve a type error or linter issue in a small module"
+      ],
+      "recommended_model": "kat-coder-pro-v1-free",
+      "provider": "kat",
+      "fallback_model": "gemini-3.1-flash-lite-preview",
+      "fallback_provider": "google",
+      "why": "Start on the free coder; upgrade to cheap Flash Lite when reasoning needs a bit more reliability.",
+      "cost_focus": "Free -> Very Low"
+    },
+    {
+      "task_category": "unit_tests_small_module",
+      "examples": [
+        "Create unit tests for a single module",
+        "Add a few test cases around a new function"
+      ],
+      "recommended_model": "gemini-3.1-flash-lite-preview",
+      "provider": "google",
+      "fallback_model": "gpt-5.3-codex",
+      "fallback_provider": "openai",
+      "why": "Flash Lite is cheap and adequate; Codex if you need stronger coding intuition.",
+      "cost_focus": "Very Low -> Low"
+    },
+    {
+      "task_category": "single_file_refactor",
+      "examples": [
+        "Refactor a function into smaller pieces",
+        "Improve readability and structure of one file"
+      ],
+      "recommended_model": "gpt-5.3-codex",
+      "provider": "openai",
+      "fallback_model": "sonnet-4.6",
+      "fallback_provider": "anthropic",
+      "why": "Codex gives strong coding performance at reasonable cost; Sonnet if Codex struggles.",
+      "cost_focus": "Low -> Medium"
+    },
+    {
+      "task_category": "small_cross_file_refactor",
+      "examples": [
+        "Refactor a module and its tests",
+        "Change an interface used in a few files"
+      ],
+      "recommended_model": "gpt-5.3-codex",
+      "provider": "openai",
+      "fallback_model": "sonnet-4.6",
+      "fallback_provider": "anthropic",
+      "why": "Good cross-file reasoning and long context without Opus-level price.",
+      "cost_focus": "Medium"
+    },
+    {
+      "task_category": "larger_feature_or_multifile_change",
+      "examples": [
+        "Add a new feature touching several modules or services",
+        "Introduce a new domain concept that requires multiple files"
+      ],
+      "recommended_model": "sonnet-4.6",
+      "provider": "anthropic",
+      "fallback_model": "opus-4.6",
+      "fallback_provider": "anthropic",
+      "why": "Sonnet 4.6 is tuned for iterative development and agents; upgrade to Opus only if the plan clearly needs it.",
+      "cost_focus": "Medium -> High"
+    },
+    {
+      "task_category": "architecture_and_design",
+      "examples": [
+        "Design a new system or service architecture",
+        "Review security or performance implications of a design",
+        "Evaluate alternative architecture options"
+      ],
+      "recommended_model": "sonnet-4.6",
+      "provider": "anthropic",
+      "fallback_model": "gpt-5.4",
+      "fallback_provider": "openai",
+      "why": "Both are frontier reasoning models; Sonnet is slightly more cost-effective for long text reasoning, GPT-5.4 when multimodal or huge context matters.",
+      "cost_focus": "Medium-High"
+    },
+    {
+      "task_category": "large_context_analysis_and_planning",
+      "examples": [
+        "Understand this area of the repo and propose a plan",
+        "Analyse multiple files before a big refactor",
+        "Investigate a complex, multi-module bug"
+      ],
+      "recommended_model": "gpt-5.3-codex",
+      "provider": "openai",
+      "fallback_model": "opus-4.6",
+      "fallback_provider": "anthropic",
+      "why": "Codex has very long context at lower blended cost; Opus is reserved for the toughest, longest-running sessions.",
+      "cost_focus": "Medium -> Very High"
+    },
+    {
+      "task_category": "build_and_ci_cd_config",
+      "examples": [
+        "Create or refactor CI/CD pipelines",
+        "Edit Dockerfiles, compose files or deployment manifests",
+        "Tidy up complex build scripts"
+      ],
+      "recommended_model": "gpt-5.3-codex",
+      "provider": "openai",
+      "fallback_model": "sonnet-4.6",
+      "fallback_provider": "anthropic",
+      "why": "You want a very reliable coder here but Opus is overkill most of the time.",
+      "cost_focus": "Medium"
+    },
+    {
+      "task_category": "documentation",
+      "examples": [
+        "Write README or basic project documentation",
+        "Generate migration guides or internal notes"
+      ],
+      "recommended_model": "gemini-3.1-flash-lite-preview",
+      "provider": "google",
+      "fallback_model": "trinity-large-preview-free",
+      "fallback_provider": "arcee",
+      "why": "Docs are great candidates for cheap/free models; pay more only when highly polished output is critical.",
+      "cost_focus": "Very Low / Free"
+    },
+    {
+      "task_category": "regex_small_scripts_text_transform",
+      "examples": [
+        "Generate a regex",
+        "Write a tiny utility script",
+        "Perform simple text transformations or translations"
+      ],
+      "recommended_model": "gemini-3.1-flash-lite-preview",
+      "provider": "google",
+      "fallback_model": "kat-coder-pro-v1-free",
+      "fallback_provider": "kat",
+      "why": "These are perfect for the cheapest or free models.",
+      "cost_focus": "Very Low / Free"
+    },
+    {
+      "task_category": "offline_or_highly_sensitive_code",
+      "examples": [
+        "Work on code that must not leave the local machine",
+        "Experiment with proprietary algorithms or IP-sensitive logic"
+      ],
+      "recommended_model": "trinity-large-preview-free",
+      "provider": "arcee",
+      "fallback_model": "kat-coder-pro-v1-free",
+      "fallback_provider": "kat",
+      "why": "Use the most private / controlled setup available and avoid expensive frontier APIs.",
+      "cost_focus": "Free (API)"
+    },
+    {
+      "task_category": "experimentation_and_play",
+      "examples": [
+        "Try out ideas and toy prototypes",
+        "Play with new APIs or frameworks in small sandboxes"
+      ],
+      "recommended_model": "trinity-large-preview-free",
+      "provider": "arcee",
+      "fallback_model": "kat-coder-pro-v1-free",
+      "fallback_provider": "kat",
+      "why": "Exploratory work should be essentially free unless you discover a real project.",
+      "cost_focus": "Free"
+    }
+  ]
+}

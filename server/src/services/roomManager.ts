@@ -22,10 +22,12 @@ class RoomManager {
 
   /** Fixed test token for development/testing */
   static readonly TEST_TOKEN = 'test';
+  static readonly EVA_TOKEN = 'eva';
 
   constructor() {
     this.startCleanupTimer();
     this.createTestRoom();
+    this.createEvaRoom();
   }
 
   /**
@@ -43,6 +45,23 @@ class RoomManager {
     this.roomsByToken.set(room.joinToken, room);
     this.roomsByRoomId.set(room.roomId, room);
     console.log('[RoomManager] Fixed test room created (token: test)');
+  }
+
+  /**
+   * Create a fixed EVA room that never expires.
+   * Accessible via /c/eva
+   */
+  private createEvaRoom(): void {
+    const room: Room = {
+      roomId: 'eva-room-fixed',
+      joinToken: RoomManager.EVA_TOKEN,
+      state: 'pending',
+      participants: [],
+      createdAt: Date.now(),
+    };
+    this.roomsByToken.set(room.joinToken, room);
+    this.roomsByRoomId.set(room.roomId, room);
+    console.log('[RoomManager] Fixed EVA room created (token: eva)');
   }
 
   /**
@@ -235,7 +254,7 @@ class RoomManager {
 
       for (const [token, room] of this.roomsByToken) {
         // Never expire the fixed test room
-        if (token === RoomManager.TEST_TOKEN) continue;
+        if (token === RoomManager.TEST_TOKEN || token === RoomManager.EVA_TOKEN) continue;
 
         // Expire pending rooms that have been waiting too long
         if (

@@ -82,9 +82,9 @@ export function createHttpRouter(clientUrl: string): Router {
       return;
     }
 
-    // For the test room, always allow joining — skip all state/capacity checks.
+    // For the test/eva rooms, always allow joining — skip all state/capacity checks.
     // Stale participant cleanup happens at WebSocket join time instead.
-    if (token === 'test') {
+    if (token === 'test' || token === 'eva') {
       const creator = room.participants.find((p: { role: string }) => p.role === 'creator');
       const response: CallStatusResponse = {
         state: 'pending',
