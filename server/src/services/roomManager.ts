@@ -24,6 +24,14 @@ class RoomManager {
   static readonly TEST_TOKEN = 'test';
   static readonly EVA_TOKEN = 'eva';
 
+  /** Tokens for permanent rooms that never expire and always reset instead of closing */
+  private static readonly PERMANENT_TOKENS = new Set([RoomManager.TEST_TOKEN, RoomManager.EVA_TOKEN]);
+
+  /** Check if a token belongs to a permanent (non-expiring, resettable) room */
+  private static isPermanent(token: string): boolean {
+    return RoomManager.PERMANENT_TOKENS.has(token);
+  }
+
   constructor() {
     this.startCleanupTimer();
     this.createTestRoom();
@@ -108,19 +116,19 @@ class RoomManager {
     activeUserIds?: Set<string>
   ): { role: ParticipantRole } | { error: string } {
     if (room.state === 'closed') {
-      // Test room should never stay closed — reset it
-      if (room.joinToken === RoomManager.TEST_TOKEN) {
+      // Permanent rooms should never stay closed — reset them
+      if (RoomManager.isPermanent(room.joinToken)) {
         room.state = 'pending';
         room.participants = [];
         room.closedAt = undefined;
-        console.log('[RoomManager] Test room was closed, resetting for new join');
+        console.log(`[RoomManager] Permanent room (${room.joinToken}) was closed, resetting for new join`);
       } else {
         return { error: 'This call link has expired' };
       }
     }
 
-    // For the test room, clean up stale/ghost participants that no longer have active connections
-    if (room.joinToken === RoomManager.TEST_TOKEN && activeUserIds) {
+    // For permanent rooms, clean up stale/ghost participants that no longer have active connections
+    if (RoomManager.isPermanent(room.joinToken) && activeUserIds) {
       const before = room.participants.length;
       room.participants = room.participants.filter((p) => activeUserIds.has(p.userId));
       if (room.participants.length < before) {
@@ -184,11 +192,11 @@ class RoomManager {
 
     // If no participants remain
     if (room.participants.length === 0) {
-      // Test room resets instead of closing so it can be reused
-      if (room.joinToken === RoomManager.TEST_TOKEN) {
+      // Permanent rooms reset instead of closing so they can be reused
+      if (RoomManager.isPermanent(room.joinToken)) {
         room.state = 'pending';
         room.closedAt = undefined;
-        console.log('[RoomManager] Test room reset to pending');
+        console.log(`[RoomManager] Permanent room (${room.joinToken}) reset to pending`);
       } else {
         this.closeRoom(room, 'All participants left');
       }
@@ -202,12 +210,12 @@ class RoomManager {
   closeRoom(room: Room, _reason: string): void {
     if (room.state === 'closed') return;
 
-    // Test room resets instead of permanently closing
-    if (room.joinToken === RoomManager.TEST_TOKEN) {
+    // Permanent rooms reset instead of permanently closing
+    if (RoomManager.isPermanent(room.joinToken)) {
       room.state = 'pending';
       room.participants = [];
       room.closedAt = undefined;
-      console.log('[RoomManager] Test room reset to pending (close attempted)');
+      console.log(`[RoomManager] Permanent room (${room.joinToken}) reset to pending (close attempted)`);
       return;
     }
 
@@ -253,8 +261,8 @@ class RoomManager {
       const toDelete: string[] = [];
 
       for (const [token, room] of this.roomsByToken) {
-        // Never expire the fixed test room
-        if (token === RoomManager.TEST_TOKEN || token === RoomManager.EVA_TOKEN) continue;
+        // Never expire permanent rooms
+        if (RoomManager.isPermanent(token)) continue;
 
         // Expire pending rooms that have been waiting too long
         if (
