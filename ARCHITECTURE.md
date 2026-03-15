@@ -69,7 +69,8 @@ The entire call is ephemeral — no data is stored, no accounts are required.
 |---|---|---|
 | **Vercel** | Client hosting (static SPA) | Free tier, automatic GitHub deploys, global CDN |
 | **Render** | Server hosting (Node.js) | Free tier, WebSocket support, auto-deploy from GitHub |
-| **Google Translate API** | Chat translation | Free unofficial endpoint, no API key required |
+| **DeepL API Free** | Chat translation (primary) | Best-in-class quality, 500k chars/month free, official SLA |
+| **Google Translate API** | Chat translation (fallback) | Free unofficial endpoint, no API key required |
 | **Google STUN servers** | NAT traversal (WebRTC) | Free, reliable, globally distributed |
 | **Metered.ca TURN** | Relay fallback (WebRTC) | Provisioned but currently parked; needed for symmetric NAT |
 
@@ -127,7 +128,7 @@ The entire call is ephemeral — no data is stored, no accounts are required.
 │  │  ├── RoomManager      (in-memory room store)      │           │
 │  │  ├── TokenGenerator   (crypto-secure tokens)      │           │
 │  │  ├── RateLimiter      (sliding window per IP)     │           │
-│  │  └── Translator       (Google Translate)          │           │
+│  │  └── Translator       (DeepL + Google fallback)   │           │
 │  └───────────────────────────────────────────────────┘           │
 └─────────────────────────────────────────────────────────────────┘
         │                          │
@@ -320,10 +321,13 @@ Sliding-window rate limiter, per IP address:
 
 #### Translator
 
-Server-side translation using Google Translate's free `translate.googleapis.com` endpoint:
-- No API key required
-- Graceful degradation: returns original text on failure
+Dual-provider translation service with automatic fallback:
+
+- **Primary: DeepL API Free** — Best-in-class translation quality, 500k chars/month free tier, official SLA, 33 languages. Requires `DEEPL_API_KEY` environment variable.
+- **Fallback: Google Translate** — Unofficial `translate.googleapis.com` endpoint, no API key required, 100+ languages, no SLA.
+- Graceful degradation: DeepL errors fall back to Google; Google errors return original text
 - Same-language messages skip translation entirely
+- DeepL client is lazy-initialised (only created on first translation request)
 
 ---
 
@@ -345,7 +349,7 @@ ICE server configuration:
 The translation pipeline:
 1. **Speech Recognition** (client): Web Speech API transcribes spoken words
 2. **Chat Send** (client → server): Transcribed text sent via WebSocket
-3. **Translation** (server): Google Translate API translates to peer's language
+3. **Translation** (server): DeepL API translates to peer's language (falls back to Google Translate if DeepL is unavailable)
 4. **Broadcast** (server → both clients): Both original and translated text delivered
 
 ### 3. Background Blur
@@ -419,6 +423,7 @@ The `useScreenCaptureDetection` hook monitors for active screen capture. When de
 | `PORT` | HTTP port (default: 3001, Render uses 10000) |
 | `CLIENT_URL` | Allowed CORS origin |
 | `NODE_ENV` | development / production |
+| `DEEPL_API_KEY` | DeepL API Free key (optional, falls back to Google) |
 | `METERED_API_KEY` | TURN server API key (optional) |
 | `METERED_APP_NAME` | TURN server app name (optional) |
 
@@ -456,13 +461,13 @@ The `useScreenCaptureDetection` hook monitors for active screen capture. When de
 **Cons**: Rooms lost on server restart, doesn't scale horizontally.
 **Trade-off accepted**: Calls are ephemeral by design. A server restart simply means active calls end — acceptable for an MVP.
 
-### Why Google Translate's free endpoint?
+### Why DeepL API Free (with Google Translate fallback)?
 
-**Decision**: Use the unofficial `translate.googleapis.com` endpoint instead of the paid Cloud Translation API.
+**Decision**: Use DeepL API Free as the primary translation provider, with the unofficial Google Translate endpoint as a zero-cost fallback.
 
-**Pros**: No API key, no billing, no quota management.
-**Cons**: No SLA, could be rate-limited or blocked by Google at any time.
-**Trade-off accepted**: For an MVP, this is pragmatic. Easy to swap for the official API later.
+**Pros**: DeepL offers best-in-class translation quality (especially for European languages), 500k chars/month free, official SLA. Google fallback means the app works even without a DeepL key.
+**Cons**: DeepL supports 33 languages (vs Google's 100+). Free tier has a monthly character limit.
+**Trade-off accepted**: 33 languages covers all major use cases. 500k chars/month is ample for a 1-to-1 chat app. Google fallback provides resilience.
 
 ### Why MediaPipe for background blur?
 
@@ -490,7 +495,7 @@ The `useScreenCaptureDetection` hook monitors for active screen capture. When de
 4. **Reconnection**: Add exponential backoff WebSocket reconnection on the client.
 5. **End-to-end encryption**: Currently media is encrypted by WebRTC (SRTP), but signalling messages are plaintext on the server. E2EE for chat would add privacy.
 6. **Horizontal scaling**: If needed, move room state to Redis and use pub/sub for cross-instance WebSocket messaging.
-7. **Paid translation API**: Swap to Google Cloud Translation or DeepL for reliability and SLA.
+7. **DeepL Pro upgrade**: If the 500k chars/month free tier is exceeded, upgrade to DeepL Pro for higher limits.
 8. **Group calls**: Would require an SFU (Selective Forwarding Unit) like mediasoup or Janus.
 
 ---
